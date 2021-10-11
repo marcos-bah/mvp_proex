@@ -9,23 +9,24 @@ class MapView extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlutterMap(
       options: MapOptions(
-        center: LatLng(51.5, -0.09),
+        center: LatLng(-22.413355, -45.450333),
         zoom: 13.0,
+        minZoom: 16,
+        maxZoom: 20,
       ),
       layers: [
         TileLayerOptions(
           urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
           subdomains: ['a', 'b', 'c'],
+          maxZoom: 20,
         ),
         MarkerLayerOptions(
           markers: [
             Marker(
               width: 80.0,
               height: 80.0,
-              point: LatLng(51.5, -0.09),
-              builder: (ctx) => Container(
-                child: const FlutterLogo(),
-              ),
+              point: LatLng(-22.413355, -45.450333),
+              builder: (ctx) => const FlutterLogo(),
             ),
           ],
         ),
