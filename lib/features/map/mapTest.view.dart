@@ -10,32 +10,18 @@ class MapTestView extends StatefulWidget {
 }
 
 class _MapTestViewState extends State<MapTestView> {
-  Offset offset = const Offset(0, 0);
-  //639.594,274.301
-  Offset offset2 = const Offset(639.594, 274.301);
-  double scaleFactor = 1;
+  double scaleFactor = 1.5;
   bool flag = true;
+  double top = 50, left = -450;
+
+  final Widget svg = SvgPicture.asset(
+    "assets/maps/reitoria/mapaTeste.svg",
+    color: Colors.blue[900],
+    fit: BoxFit.none,
+  );
+
   @override
   Widget build(BuildContext context) {
-    //mapa
-    const Offset tam = Offset(
-      800,
-      600,
-    );
-
-    double x = tam.dx;
-    double y = tam.dy;
-
-    const String assetName = "assets/maps/reitoria/mapaTeste.svg";
-
-    final Widget svg = SvgPicture.asset(
-      assetName,
-      color: Colors.blue[900],
-      width: 800,
-      height: 600,
-      fit: BoxFit.none,
-    );
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mapa Teste'),
@@ -44,24 +30,8 @@ class _MapTestViewState extends State<MapTestView> {
       body: GestureDetector(
         onPanUpdate: (details) {
           setState(() {
-            offset += details.delta;
-            if (MediaQuery.of(context).size.width <= x) {
-              x = MediaQuery.of(context).size.width - 100;
-            } else {
-              x = 800;
-            }
-
-            if (MediaQuery.of(context).size.height <= y) {
-              y = MediaQuery.of(context).size.height - 100;
-            } else {
-              y = 600;
-            }
-
-            // limit
-            offset = Offset(
-              offset.dx.clamp(-(x / 2), x / 2),
-              offset.dy.clamp(-(y / 2), y / 2),
-            );
+            top += details.delta.dy;
+            left += details.delta.dx;
           });
         },
         onDoubleTap: () {
@@ -75,20 +45,43 @@ class _MapTestViewState extends State<MapTestView> {
             }
           });
         },
+        onPanDown: (details) {
+          setState(() {
+            //pegar localização x, y da tela, no click
+            print(MediaQuery.of(context).size);
+            print(details.localPosition);
+            //img x = 800 e y = 600
+            //img obj x = 639 e y = 274
+            //ob x = -450 e y = 50
+
+            /*
+              tam_img.x / 358 = !
+              
+            */
+          });
+        },
         child: Transform.scale(
           scale: scaleFactor,
-          child: Expanded(
-            child: Transform.translate(
-              offset: offset,
-              child: Container(
-                margin: EdgeInsets.zero,
-                padding: EdgeInsets.zero,
-                height: 900,
-                width: 900,
-                color: Colors.red,
-                child: svg,
+          child: Stack(
+            children: [
+              Positioned(
+                top: top,
+                left: left,
+                child: Container(
+                  margin: EdgeInsets.zero,
+                  padding: EdgeInsets.zero,
+                  child: Stack(
+                    children: [
+                      svg,
+                      const PersonWidget(
+                        top: 274,
+                        left: 639,
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
