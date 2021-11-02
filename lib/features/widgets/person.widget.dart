@@ -12,12 +12,15 @@ class PersonWidget extends StatelessWidget {
     // offset to center, side is 10
 
     return Positioned(
-      top: top - side / 2,
-      left: left - side / 2,
-      child: Container(
-        height: side,
-        width: side,
-        color: Colors.red,
+      top: top - side,
+      left: left - side,
+      child: CircleAvatar(
+        backgroundColor: Colors.blue[900],
+        radius: side,
+        child: CircleAvatar(
+          radius: side * .8,
+          backgroundImage: const AssetImage("assets/images/profile.jpeg"),
+        ),
       ),
     );
   }
