@@ -64,15 +64,8 @@ class _SVGMapState extends State<SVGMap> {
         onPanUpdate: (details) {
           setState(
             () {
-              if (top! > -(widget.svgHeight / 2) &&
-                  top! < widget.svgHeight / 2) {
-                top = top! + details.delta.dy;
-              }
-
-              left = left! >= widget.svgWidth / 2
-                  ? left! + 0
-                  : left! + details.delta.dx;
-              print(top);
+              top = top! + details.delta.dy;
+              left = left! + details.delta.dx;
             },
           );
         },
