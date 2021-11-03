@@ -16,7 +16,6 @@ class PersonModel {
   PersonModel(this._x, this._y, this._z, this._lat, this._lon, this._alt);
 
   // getters
-
   double get x => _x;
   double get y => _y;
   double get z => _z;
@@ -26,7 +25,6 @@ class PersonModel {
   double get alt => _alt;
 
   // setters
-
   set setx(double value) {
     _x = value;
     //TODO: atualizar lat, lon, alt

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mvp_proex/features/model/person.model.dart';
@@ -152,6 +154,13 @@ class _SVGMapState extends State<SVGMap> {
                       );
                     },
                   );
+                },
+                onSecondaryTapDown: (details) {
+                  if (Platform.isLinux ||
+                      Platform.isMacOS ||
+                      Platform.isWindows) {
+                    //somente desktop
+                  }
                 },
                 child: Container(
                   margin: EdgeInsets.zero,
