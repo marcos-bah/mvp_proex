@@ -9,9 +9,11 @@ class AppWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'MVP Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.deepOrange,
+        scaffoldBackgroundColor: Colors.black12,
       ),
       initialRoute: '/mapTest',
       routes: {

@@ -26,7 +26,7 @@ class _MapTestViewState extends State<MapTestView> {
         svgPath: "assets/maps/reitoria/mapaTeste.svg",
         svgWidth: 800,
         svgHeight: 600,
-        svgScale: 1.1,
+        svgScale: 1.3,
         originY: 274,
         originX: 639,
       ),
