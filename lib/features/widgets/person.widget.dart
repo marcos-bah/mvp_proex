@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mvp_proex/features/model/person.model.dart';
 
 class PersonWidget extends StatelessWidget {
-  final double top, left;
+  final PersonModel person;
   final double side;
-  const PersonWidget(
-      {Key? key, this.side = 10, required this.top, required this.left})
+  const PersonWidget({Key? key, this.side = 10, required this.person})
       : super(key: key);
 
   @override
@@ -13,8 +13,8 @@ class PersonWidget extends StatelessWidget {
 
     return AnimatedPositioned(
       duration: const Duration(seconds: 1),
-      top: top - side,
-      left: left - side,
+      top: person.y - side,
+      left: person.x - side,
       child: CircleAvatar(
         backgroundColor: Colors.blue[900],
         radius: side,

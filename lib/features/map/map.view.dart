@@ -1,36 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:mvp_proex/features/model/person.model.dart';
+import 'package:mvp_proex/features/widgets/svg_map.widget.dart';
 
-class MapView extends StatelessWidget {
+class MapView extends StatefulWidget {
   const MapView({Key? key}) : super(key: key);
 
   @override
+  State<MapView> createState() => _MapViewState();
+}
+
+class _MapViewState extends State<MapView> {
+  PersonModel person = PersonModel(639, 274, 0, 0, 0, 0);
+
+  @override
   Widget build(BuildContext context) {
-    return FlutterMap(
-      options: MapOptions(
-        center: LatLng(-22.413355, -45.450333),
-        zoom: 13.0,
-        minZoom: 16,
-        maxZoom: 20,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Reitoria', style: TextStyle(color: Colors.black87)),
+        centerTitle: true,
       ),
-      layers: [
-        TileLayerOptions(
-          urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-          subdomains: ['a', 'b', 'c'],
-          maxZoom: 20,
-        ),
-        MarkerLayerOptions(
-          markers: [
-            Marker(
-              width: 80.0,
-              height: 80.0,
-              point: LatLng(-22.413355, -45.450333),
-              builder: (ctx) => const FlutterLogo(),
-            ),
-          ],
-        ),
-      ],
+      body: SVGMap(
+        svgPath: "assets/maps/reitoria/mapaTeste.svg",
+        svgWidth: 800,
+        svgHeight: 600,
+        svgScale: 1.3,
+        person: person,
+      ),
     );
   }
 }

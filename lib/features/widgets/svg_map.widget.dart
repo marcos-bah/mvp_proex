@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:mvp_proex/features/model/person.model.dart';
 import 'package:mvp_proex/features/widgets/person.widget.dart';
 
 class SVGMap extends StatefulWidget {
@@ -47,29 +48,17 @@ class SVGMap extends StatefulWidget {
   /// ```
   final double svgScale;
 
-  /// Define a origem em X, o centro do svg.
+  /// Define a origem o personagem no SVG
   /// Por padrão ele é 0
   ///
   /// ```dart
   /// SVGMap(
   ///   ...
-  ///   originX: 274,
+  ///   person: person,
   ///   ...
   /// ),
   /// ```
-  final double originX;
-
-  /// Define a origem em Y, o centro do svg.
-  /// Por padrão ele é 0
-  ///
-  /// ```dart
-  /// SVGMap(
-  ///   ...
-  ///   originY: 274,
-  ///   ...
-  /// ),
-  /// ```
-  final double originY;
+  final PersonModel person;
 
   const SVGMap({
     Key? key,
@@ -77,8 +66,7 @@ class SVGMap extends StatefulWidget {
     required this.svgWidth,
     required this.svgHeight,
     this.svgScale = 1,
-    this.originX = 0,
-    this.originY = 0,
+    required this.person,
   }) : super(key: key);
 
   @override
@@ -95,9 +83,6 @@ class _SVGMapState extends State<SVGMap> {
 
   late final Widget svg;
 
-  late double localPosX;
-  late double localPosY;
-
   late double objetivoX;
   late double objetivoY;
 
@@ -110,19 +95,16 @@ class _SVGMapState extends State<SVGMap> {
       fit: BoxFit.none,
     );
 
-    localPosX = widget.originX;
-    localPosY = widget.originY;
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     if (left == null && top == null) {
-      top = ((localPosY - MediaQuery.of(context).size.height / 2) +
+      top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
               AppBar().preferredSize.height) *
           -1;
-      left = (localPosX - MediaQuery.of(context).size.width / 2) * -1;
+      left = (widget.person.x - MediaQuery.of(context).size.width / 2) * -1;
     }
     return Scaffold(
       body: Transform.scale(
@@ -163,8 +145,8 @@ class _SVGMapState extends State<SVGMap> {
                       setState(
                         () {
                           setState(() {
-                            localPosX = objetivoX;
-                            localPosY = objetivoY;
+                            widget.person.setx = objetivoX;
+                            widget.person.sety = objetivoY;
                           });
                         },
                       );
@@ -178,8 +160,7 @@ class _SVGMapState extends State<SVGMap> {
                     children: [
                       svg,
                       PersonWidget(
-                        top: localPosY,
-                        left: localPosX,
+                        person: widget.person,
                       ),
                     ],
                   ),
@@ -218,11 +199,13 @@ class _SVGMapState extends State<SVGMap> {
             onPressed: () {
               setState(
                 () {
-                  top = ((localPosY - MediaQuery.of(context).size.height / 2) +
+                  top = ((widget.person.y -
+                              MediaQuery.of(context).size.height / 2) +
                           AppBar().preferredSize.height) *
                       -1;
-                  left =
-                      (localPosX - MediaQuery.of(context).size.width / 2) * -1;
+                  left = (widget.person.x -
+                          MediaQuery.of(context).size.width / 2) *
+                      -1;
                 },
               );
             },

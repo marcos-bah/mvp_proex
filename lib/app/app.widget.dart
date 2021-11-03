@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mvp_proex/features/map/map.view.dart';
-import 'package:mvp_proex/features/map/mapTest.view.dart';
 
 class AppWidget extends StatelessWidget {
   const AppWidget({Key? key}) : super(key: key);
@@ -15,10 +14,9 @@ class AppWidget extends StatelessWidget {
         primarySwatch: Colors.deepOrange,
         scaffoldBackgroundColor: Colors.black12,
       ),
-      initialRoute: '/mapTest',
+      initialRoute: '/map',
       routes: {
         '/map': (context) => const MapView(),
-        '/mapTest': (context) => const MapTestView(),
       },
     );
   }
