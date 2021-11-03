@@ -11,7 +11,8 @@ class PersonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // offset to center, side is 10
 
-    return Positioned(
+    return AnimatedPositioned(
+      duration: const Duration(seconds: 1),
       top: top - side,
       left: left - side,
       child: CircleAvatar(

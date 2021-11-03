@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mvp_proex/features/widgets/person.widget.dart';
 import 'package:mvp_proex/features/widgets/svg_map.widget.dart';
 
 class MapTestView extends StatefulWidget {
@@ -19,7 +17,7 @@ class _MapTestViewState extends State<MapTestView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mapa Teste'),
+        title: const Text('Reitoria', style: TextStyle(color: Colors.black87)),
         centerTitle: true,
       ),
       body: const SVGMap(

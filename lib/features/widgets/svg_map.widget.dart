@@ -119,46 +119,58 @@ class _SVGMapState extends State<SVGMap> {
   @override
   Widget build(BuildContext context) {
     if (left == null && top == null) {
-      top = (localPosY - MediaQuery.of(context).size.height / 2) * -1;
+      top = ((localPosY - MediaQuery.of(context).size.height / 2) +
+              AppBar().preferredSize.height) *
+          -1;
       left = (localPosX - MediaQuery.of(context).size.width / 2) * -1;
     }
     return Scaffold(
-      body: GestureDetector(
-        onPanUpdate: (details) {
-          setState(
-            () {
-              top = top! + details.delta.dy;
-              left = left! + details.delta.dx;
-            },
-          );
-        },
-        onDoubleTap: () {
-          setState(() {
-            if (flag) {
-              scaleFactor *= 2;
-              flag = false;
-            } else {
-              scaleFactor *= 1 / 2;
-              flag = true;
-            }
-          });
-        },
-        onPanDown: (details) {
-          setState(
-            () {
-              // TODO: pegar posição na imagem
-              objetivoX = details.localPosition.dx;
-              objetivoY = details.localPosition.dy;
-            },
-          );
-        },
-        child: Transform.scale(
-          scale: scaleFactor,
-          child: Stack(
-            children: [
-              Positioned(
-                top: top,
-                left: left,
+      body: Transform.scale(
+        scale: scaleFactor,
+        child: Stack(
+          children: [
+            Positioned(
+              top: top,
+              left: left,
+              child: GestureDetector(
+                onDoubleTap: () {
+                  setState(
+                    () {
+                      if (flag) {
+                        scaleFactor *= 2;
+                        flag = false;
+                      } else {
+                        scaleFactor *= 1 / 2;
+                        flag = true;
+                      }
+                    },
+                  );
+                },
+                onPanUpdate: (details) {
+                  setState(
+                    () {
+                      top = top! + details.delta.dy;
+                      left = left! + details.delta.dx;
+                    },
+                  );
+                },
+                onLongPressEnd: (details) {
+                  setState(
+                    () {
+                      objetivoX = details.localPosition.dx;
+                      objetivoY = details.localPosition.dy;
+
+                      setState(
+                        () {
+                          setState(() {
+                            localPosX = objetivoX;
+                            localPosY = objetivoY;
+                          });
+                        },
+                      );
+                    },
+                  );
+                },
                 child: Container(
                   margin: EdgeInsets.zero,
                   padding: EdgeInsets.zero,
@@ -173,23 +185,53 @@ class _SVGMapState extends State<SVGMap> {
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(
-            () {
-              top = (localPosY - MediaQuery.of(context).size.height / 2) * -1;
-              left = (localPosX - MediaQuery.of(context).size.width / 2) * -1;
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              setState(
+                () {
+                  if (flag) {
+                    scaleFactor *= 2;
+                    flag = false;
+                  } else {
+                    scaleFactor *= 1 / 2;
+                    flag = true;
+                  }
+                },
+              );
             },
-          );
-        },
-        child: const Icon(
-          Icons.center_focus_strong,
-          size: 30,
-        ),
+            child: Icon(
+              flag ? Icons.zoom_in_sharp : Icons.zoom_out_map,
+              size: 30,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              setState(
+                () {
+                  top = ((localPosY - MediaQuery.of(context).size.height / 2) +
+                          AppBar().preferredSize.height) *
+                      -1;
+                  left =
+                      (localPosX - MediaQuery.of(context).size.width / 2) * -1;
+                },
+              );
+            },
+            child: const Icon(
+              Icons.center_focus_strong,
+              size: 30,
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(
