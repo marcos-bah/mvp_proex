@@ -22,14 +22,13 @@ class _MapTestViewState extends State<MapTestView> {
         title: const Text('Mapa Teste'),
         centerTitle: true,
       ),
-      body: SVGMap(
+      body: const SVGMap(
         svgPath: "assets/maps/reitoria/mapaTeste.svg",
         svgWidth: 800,
         svgHeight: 600,
         svgScale: 1.1,
         originY: 274,
         originX: 639,
-        originContext: context,
       ),
     );
   }

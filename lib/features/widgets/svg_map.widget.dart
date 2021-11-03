@@ -3,23 +3,83 @@ import 'package:flutter_svg/svg.dart';
 import 'package:mvp_proex/features/widgets/person.widget.dart';
 
 class SVGMap extends StatefulWidget {
+  /// Define o caminho do asset:
+  ///
+  /// ```dart
+  /// SVGMap(
+  ///   svgPath: "assets/maps/reitoria/mapaTeste.svg",
+  ///   ...
+  /// ),
+  /// ```
   final String svgPath;
+
+  /// Define a largura do SVG, em pixel
+  ///
+  /// ```dart
+  /// SVGMap(
+  ///   ...
+  ///   svgWidth: 800,
+  ///   ...
+  /// ),
+  /// ```
   final double svgWidth;
+
+  /// Define a altura do SVG, em pixel
+  ///
+  /// ```dart
+  /// SVGMap(
+  ///   ...
+  ///   svgHeight: 600,
+  ///   ...
+  /// ),
+  /// ```
   final double svgHeight;
+
+  /// Define a scala inicial do SVG, em pixel
+  /// Por padrão ele é 1.0
+  ///
+  /// ```dart
+  /// SVGMap(
+  ///   ...
+  ///   svgScale: 1.1,
+  ///   ...
+  /// ),
+  /// ```
   final double svgScale;
+
+  /// Define a origem em X, o centro do svg.
+  /// Por padrão ele é 0
+  ///
+  /// ```dart
+  /// SVGMap(
+  ///   ...
+  ///   originX: 274,
+  ///   ...
+  /// ),
+  /// ```
   final double originX;
+
+  /// Define a origem em Y, o centro do svg.
+  /// Por padrão ele é 0
+  ///
+  /// ```dart
+  /// SVGMap(
+  ///   ...
+  ///   originY: 274,
+  ///   ...
+  /// ),
+  /// ```
   final double originY;
-  final BuildContext originContext;
-  const SVGMap(
-      {Key? key,
-      required this.svgPath,
-      required this.svgWidth,
-      required this.svgHeight,
-      this.svgScale = 1,
-      this.originX = 0,
-      this.originY = 0,
-      required this.originContext})
-      : super(key: key);
+
+  const SVGMap({
+    Key? key,
+    required this.svgPath,
+    required this.svgWidth,
+    required this.svgHeight,
+    this.svgScale = 1,
+    this.originX = 0,
+    this.originY = 0,
+  }) : super(key: key);
 
   @override
   State<SVGMap> createState() => _SVGMapState();
