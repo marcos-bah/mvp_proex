@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mvp_proex/features/model/person.model.dart';
 import 'package:mvp_proex/features/widgets/person.widget.dart';
+import 'package:mvp_proex/features/widgets/point.widget.dart';
 
 class SVGMap extends StatefulWidget {
   /// Define o caminho do asset:
@@ -88,6 +89,10 @@ class _SVGMapState extends State<SVGMap> {
   late double objetivoX;
   late double objetivoY;
 
+  List<Map<String, dynamic>> points = [];
+  int prev = -1;
+  int id = 0;
+
   @override
   void initState() {
     scaleFactor = widget.svgScale;
@@ -160,6 +165,47 @@ class _SVGMapState extends State<SVGMap> {
                       Platform.isMacOS ||
                       Platform.isWindows) {
                     //somente desktop
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text("Adicionar ponto $id"),
+                          content: Text(
+                              "X = ${details.localPosition.dx}\nY = ${details.localPosition.dy}"),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text(
+                                "Cancelar",
+                                style: TextStyle(color: Colors.redAccent),
+                              ),
+                            ),
+                            TextButton(
+                                onPressed: () {
+                                  Map<String, dynamic> json = {
+                                    "x": details.localPosition.dx,
+                                    "y": details.localPosition.dy,
+                                    "prev": prev++,
+                                    "id": id++,
+                                  };
+
+                                  if (prev < id - 1) {
+                                    prev = id - 1;
+                                  }
+
+                                  setState(() {
+                                    points.add(json);
+                                    print(points);
+                                  });
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Adicionar")),
+                          ],
+                        );
+                      },
+                    );
                   }
                 },
                 child: Container(
@@ -171,6 +217,63 @@ class _SVGMapState extends State<SVGMap> {
                       PersonWidget(
                         person: widget.person,
                       ),
+                      ...points
+                          .map<Widget>(
+                            (e) => PointWidget(
+                              x: e["x"],
+                              y: e["y"],
+                              side: 5,
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: Text("Ponto ${e["id"]}"),
+                                      content: Text(
+                                          "X = ${e["x"]}\nY = ${e["y"]}\nPrev = ${e["prev"]}"),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text(
+                                            "Cancelar",
+                                            style: TextStyle(
+                                                color: Colors.redAccent),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              points.remove(e);
+                                            });
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text(
+                                            "Remover",
+                                            style: TextStyle(
+                                                color: Colors.redAccent),
+                                          ),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            prev = e["id"];
+                                            Navigator.pop(context);
+                                          },
+                                          child: const Text(
+                                            "Usar como anterior",
+                                            style:
+                                                TextStyle(color: Colors.green),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          )
+                          .toList(),
                     ],
                   ),
                 ),
