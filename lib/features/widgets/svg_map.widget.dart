@@ -83,6 +83,7 @@ class _SVGMapState extends State<SVGMap> {
   late double scaleFactor;
 
   bool flag = true;
+  bool flagDuration = false;
 
   late final Widget svg;
 
@@ -118,7 +119,10 @@ class _SVGMapState extends State<SVGMap> {
         scale: scaleFactor,
         child: Stack(
           children: [
-            Positioned(
+            AnimatedPositioned(
+              duration: flagDuration
+                  ? const Duration(milliseconds: 500)
+                  : const Duration(milliseconds: 0),
               top: top,
               left: left,
               child: GestureDetector(
@@ -138,6 +142,7 @@ class _SVGMapState extends State<SVGMap> {
                 onPanUpdate: (details) {
                   setState(
                     () {
+                      flagDuration = false;
                       top = top! + details.delta.dy;
                       left = left! + details.delta.dx;
                     },
@@ -197,7 +202,6 @@ class _SVGMapState extends State<SVGMap> {
 
                                   setState(() {
                                     points.add(json);
-                                    print(points);
                                   });
                                   Navigator.pop(context);
                                 },
@@ -266,6 +270,52 @@ class _SVGMapState extends State<SVGMap> {
                                                 TextStyle(color: Colors.green),
                                           ),
                                         ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            Navigator.pop(context);
+                                            int inicio = -1;
+                                            int objetivoID = e["id"];
+                                            List tracker = [];
+
+                                            // procurar em points o id igual a objetivoID
+                                            Map<String, dynamic> point = points
+                                                .where((element) =>
+                                                    element["id"] == objetivoID)
+                                                .first;
+
+                                            // fazer todo o caminho inverso até o ponto com id igual a 1
+                                            while (point["id"] != inicio + 1) {
+                                              tracker.add(point);
+                                              point = points
+                                                  .where((element) =>
+                                                      element["id"] ==
+                                                      point["prev"])
+                                                  .first;
+                                            }
+                                            tracker.add(point);
+
+                                            //inicio
+                                            tracker = tracker.reversed.toList();
+
+                                            for (var i = 0;
+                                                i < tracker.length;
+                                                i++) {
+                                              setState(() {
+                                                widget.person.setx =
+                                                    tracker[i]["x"];
+                                                widget.person.sety =
+                                                    tracker[i]["y"];
+                                              });
+                                              await Future.delayed(
+                                                  const Duration(seconds: 2));
+                                            }
+                                          },
+                                          child: const Text(
+                                            "Objetivo",
+                                            style:
+                                                TextStyle(color: Colors.yellow),
+                                          ),
+                                        ),
                                       ],
                                     );
                                   },
@@ -311,6 +361,7 @@ class _SVGMapState extends State<SVGMap> {
             onPressed: () {
               setState(
                 () {
+                  flagDuration = true;
                   top = ((widget.person.y -
                               MediaQuery.of(context).size.height / 2) +
                           AppBar().preferredSize.height) *

@@ -12,7 +12,7 @@ class PersonWidget extends StatelessWidget {
     // offset to center, side is 10
 
     return AnimatedPositioned(
-      duration: const Duration(seconds: 1),
+      duration: const Duration(seconds: 2),
       top: person.y - side,
       left: person.x - side,
       child: CircleAvatar(
