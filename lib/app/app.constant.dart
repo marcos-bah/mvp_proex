@@ -1,0 +1,4 @@
+enum TypePoint {
+  path,
+  goal,
+}

@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter_svg/svg.dart';
+import 'package:mvp_proex/app/app.constant.dart';
 import 'package:mvp_proex/features/model/person.model.dart';
 import 'package:mvp_proex/features/widgets/custom_appbar.widget.dart';
+import 'package:mvp_proex/features/widgets/dialog_edit_point.dart';
+import 'package:mvp_proex/features/widgets/dialog_point.widget.dart';
 import 'package:mvp_proex/features/widgets/person.widget.dart';
 import 'package:mvp_proex/features/widgets/point.widget.dart';
-import 'package:mvp_proex/features/widgets/top_navigation.widget.dart';
 
 class SVGMap extends StatefulWidget {
   /// Define o caminho do asset:
@@ -80,6 +82,8 @@ class SVGMap extends StatefulWidget {
 }
 
 class _SVGMapState extends State<SVGMap> {
+  bool isAdmin = false;
+
   double? top;
   double? left;
 
@@ -118,10 +122,12 @@ class _SVGMapState extends State<SVGMap> {
     );
     // ignore: unused_local_variable
     Map<String, dynamic> json = {
+      "id": id++,
       "x": widget.person.x,
       "y": widget.person.y,
       "prev": prev++,
-      "id": id++,
+      "type": TypePoint.goal.toString(),
+      "name": "Entrada Reitoria"
     };
 
     points.add(json);
@@ -172,235 +178,89 @@ class _SVGMapState extends State<SVGMap> {
                     : const Duration(milliseconds: 0),
                 top: top,
                 left: left,
-                child: GestureDetector(
-                  onDoubleTap: () {
-                    setState(
-                      () {
-                        if (flag) {
-                          scaleFactor *= 2;
-                          flag = false;
-                        } else {
-                          scaleFactor *= 1 / 2;
-                          flag = true;
-                        }
-                      },
-                    );
+                child: MouseRegion(
+                  onHover: (event) {
+                    if (isAdmin) {
+                      print(event);
+                    }
                   },
-                  onPanUpdate: (details) {
-                    setState(
-                      () {
-                        flagDuration = false;
-                        top = top! + details.delta.dy;
-                        left = left! + details.delta.dx;
-                      },
-                    );
-                  },
-                  onLongPressEnd: (details) {
-                    setState(
-                      () {
-                        objetivoX = details.localPosition.dx;
-                        objetivoY = details.localPosition.dy;
+                  child: GestureDetector(
+                    onDoubleTap: () {
+                      setState(
+                        () {
+                          if (flag) {
+                            scaleFactor *= 2;
+                            flag = false;
+                          } else {
+                            scaleFactor *= 1 / 2;
+                            flag = true;
+                          }
+                        },
+                      );
+                    },
+                    onPanUpdate: (details) {
+                      setState(
+                        () {
+                          flagDuration = false;
+                          top = top! + details.delta.dy;
+                          left = left! + details.delta.dx;
+                        },
+                      );
+                    },
+                    onLongPressEnd: (details) {
+                      setState(
+                        () {
+                          objetivoX = details.localPosition.dx;
+                          objetivoY = details.localPosition.dy;
 
-                        setState(
-                          () {
-                            setState(() {
-                              widget.person.setx = objetivoX;
-                              widget.person.sety = objetivoY;
-                            });
-                          },
-                        );
-                      },
-                    );
-                  },
-                  onSecondaryTapDown: (details) {
-                    if (Platform.isLinux ||
-                        Platform.isMacOS ||
-                        Platform.isWindows) {
-                      //somente desktop
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text("Adicionar ponto $id"),
-                            content: Text(
-                                "X = ${details.localPosition.dx}\nY = ${details.localPosition.dy}"),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text(
-                                  "Cancelar",
-                                  style: TextStyle(color: Colors.redAccent),
-                                ),
-                              ),
-                              TextButton(
-                                  onPressed: () {
-                                    Map<String, dynamic> json = {
-                                      "x": details.localPosition.dx,
-                                      "y": details.localPosition.dy,
-                                      "prev": prev++,
-                                      "id": id++,
-                                    };
-
-                                    if (prev < id - 1) {
-                                      prev = id - 1;
-                                    }
-
-                                    setState(() {
-                                      points.add(json);
-                                    });
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text("Adicionar")),
-                            ],
+                          setState(
+                            () {
+                              setState(() {
+                                widget.person.setx = objetivoX;
+                                widget.person.sety = objetivoY;
+                              });
+                            },
                           );
                         },
                       );
-                    }
-                  },
-                  child: Container(
-                    margin: EdgeInsets.zero,
-                    padding: EdgeInsets.zero,
-                    child: Stack(
-                      children: [
-                        svg,
-                        PersonWidget(
-                          person: widget.person,
-                        ),
-                        ...points
-                            .map<Widget>(
-                              (e) => PointWidget(
-                                x: e["x"],
-                                y: e["y"],
-                                side: 5,
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        title: Text("Ponto ${e["id"]}"),
-                                        content: Text(
-                                            "X = ${e["x"]}\nY = ${e["y"]}\nPrev = ${e["prev"]}"),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text(
-                                              "Cancelar",
-                                              style: TextStyle(
-                                                  color: Colors.redAccent),
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: e["id"] == id
-                                                ? () {
-                                                    setState(() {
-                                                      points.remove(e);
-                                                    });
-                                                    Navigator.pop(context);
-                                                  }
-                                                : null,
-                                            child: const Text(
-                                              "Remover",
-                                              style: TextStyle(
-                                                  color: Colors.redAccent),
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              prev = e["id"];
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text(
-                                              "Usar como anterior",
-                                              style: TextStyle(
-                                                  color: Colors.green),
-                                            ),
-                                          ),
-                                          TextButton(
-                                            onPressed: () async {
-                                              // TODO: Caminho melhor
-                                              // fechar pop up
-                                              Navigator.pop(context);
-
-                                              // lista do caminho a ser seguido
-                                              List tracker = [];
-
-                                              // pegando o ponto inicial
-                                              Map pointInit = points
-                                                  .where((element) =>
-                                                      element["x"] ==
-                                                          widget.person.x &&
-                                                      element["y"] ==
-                                                          widget.person.y)
-                                                  .first;
-
-                                              bool flag =
-                                                  pointInit["id"] > e["id"];
-
-                                              // traçar o caminho, caso o caminho seja de volta
-                                              while (
-                                                  pointInit["id"] != e["id"]) {
-                                                if (flag) {
-                                                  pointInit = points
-                                                      .where((element) =>
-                                                          element["id"] ==
-                                                          pointInit["prev"])
-                                                      .first;
-                                                  tracker.add(pointInit);
-                                                } else {
-                                                  tracker.add(e);
-                                                  e = points
-                                                      .where((element) =>
-                                                          element["id"] ==
-                                                          e["prev"])
-                                                      .first;
-                                                }
-                                              }
-
-                                              //inicio
-                                              if (flag) {
-                                                tracker.add(e);
-                                              } else {
-                                                tracker =
-                                                    tracker.reversed.toList();
-                                              }
-
-                                              print(tracker);
-
-                                              for (var i = 0;
-                                                  i < tracker.length;
-                                                  i++) {
-                                                setState(() {
-                                                  widget.person.setx =
-                                                      tracker[i]["x"];
-                                                  widget.person.sety =
-                                                      tracker[i]["y"];
-                                                  inicio = tracker[i]["id"];
-                                                });
-
-                                                await Future.delayed(
-                                                    const Duration(seconds: 2));
-                                                centralizar(true);
-                                              }
-                                            },
-                                            child: const Text(
-                                              "Objetivo",
-                                              style: TextStyle(
-                                                  color: Colors.deepPurple),
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            )
-                            .toList(),
-                      ],
+                    },
+                    onSecondaryTapDown: (details) {
+                      if (Platform.isLinux ||
+                          Platform.isMacOS ||
+                          Platform.isWindows) {
+                        //somente desktop
+                        dialogPointWidget(context, details, id, prev, points)
+                            .whenComplete(() => setState(() {}));
+                      }
+                    },
+                    child: Container(
+                      margin: EdgeInsets.zero,
+                      padding: EdgeInsets.zero,
+                      child: Stack(
+                        children: [
+                          svg,
+                          ...points
+                              .map<Widget>(
+                                (e) => PointWidget(
+                                  json: e,
+                                  side: 5,
+                                  onPressed: () {
+                                    if (Platform.isLinux ||
+                                        Platform.isMacOS ||
+                                        Platform.isWindows) {
+                                      //somente desktop
+                                      dialogEditPoint(context, e, id, prev,
+                                          inicio, centralizar, widget, points);
+                                    }
+                                  },
+                                ),
+                              )
+                              .toList(),
+                          PersonWidget(
+                            person: widget.person,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -412,6 +272,37 @@ class _SVGMapState extends State<SVGMap> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
+              ? FloatingActionButton(
+                  backgroundColor: Colors.red[900],
+                  onPressed: () {
+                    setState(
+                      () {
+                        isAdmin = !isAdmin;
+                        // criar scaffold message
+                        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isAdmin
+                                  ? 'Modo Admin Ativado'
+                                  : 'Modo Admin Desativado',
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                  child: const Icon(
+                    Icons.admin_panel_settings,
+                    size: 30,
+                  ),
+                )
+              : Container(),
+          const SizedBox(
+            height: 20,
+          ),
           FloatingActionButton(
             onPressed: () {
               setState(
