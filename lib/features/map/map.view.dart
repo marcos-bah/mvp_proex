@@ -15,16 +15,14 @@ class _MapViewState extends State<MapView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Reitoria', style: TextStyle(color: Colors.black87)),
-        centerTitle: true,
-      ),
-      body: SVGMap(
-        svgPath: "assets/maps/reitoria/mapaTeste.svg",
-        svgWidth: 800,
-        svgHeight: 600,
-        svgScale: 1.3,
-        person: person,
+      body: SafeArea(
+        child: SVGMap(
+          svgPath: "assets/maps/reitoria/mapaTeste.svg",
+          svgWidth: 800,
+          svgHeight: 600,
+          svgScale: 1.3,
+          person: person,
+        ),
       ),
     );
   }

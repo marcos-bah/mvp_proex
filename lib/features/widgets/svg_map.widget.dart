@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:flutter_svg/svg.dart';
 import 'package:mvp_proex/features/model/person.model.dart';
+import 'package:mvp_proex/features/widgets/custom_appbar.widget.dart';
 import 'package:mvp_proex/features/widgets/person.widget.dart';
 import 'package:mvp_proex/features/widgets/point.widget.dart';
+import 'package:mvp_proex/features/widgets/top_navigation.widget.dart';
 
 class SVGMap extends StatefulWidget {
   /// Define o caminho do asset:
@@ -90,9 +93,20 @@ class _SVGMapState extends State<SVGMap> {
   late double objetivoX;
   late double objetivoY;
 
-  List<Map<String, dynamic>> points = [];
   int prev = -1;
   int id = 0;
+  int inicio = 0;
+  List<Map<String, dynamic>> points = [];
+
+  void centralizar(bool flag) {
+    setState(() {
+      flagDuration = flag;
+      top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
+              AppBar().preferredSize.height) *
+          -1;
+      left = (widget.person.x - MediaQuery.of(context).size.width / 2) * -1;
+    });
+  }
 
   @override
   void initState() {
@@ -102,7 +116,15 @@ class _SVGMapState extends State<SVGMap> {
       color: Colors.white,
       fit: BoxFit.none,
     );
+    // ignore: unused_local_variable
+    Map<String, dynamic> json = {
+      "x": widget.person.x,
+      "y": widget.person.y,
+      "prev": prev++,
+      "id": id++,
+    };
 
+    points.add(json);
     super.initState();
   }
 
@@ -115,221 +137,276 @@ class _SVGMapState extends State<SVGMap> {
       left = (widget.person.x - MediaQuery.of(context).size.width / 2) * -1;
     }
     return Scaffold(
-      body: Transform.scale(
-        scale: scaleFactor,
-        child: Stack(
-          children: [
-            AnimatedPositioned(
-              duration: flagDuration
-                  ? const Duration(milliseconds: 500)
-                  : const Duration(milliseconds: 0),
-              top: top,
-              left: left,
-              child: GestureDetector(
-                onDoubleTap: () {
-                  setState(
-                    () {
-                      if (flag) {
-                        scaleFactor *= 2;
-                        flag = false;
-                      } else {
-                        scaleFactor *= 1 / 2;
-                        flag = true;
-                      }
-                    },
-                  );
-                },
-                onPanUpdate: (details) {
-                  setState(
-                    () {
-                      flagDuration = false;
-                      top = top! + details.delta.dy;
-                      left = left! + details.delta.dx;
-                    },
-                  );
-                },
-                onLongPressEnd: (details) {
-                  setState(
-                    () {
-                      objetivoX = details.localPosition.dx;
-                      objetivoY = details.localPosition.dy;
-
-                      setState(
-                        () {
-                          setState(() {
-                            widget.person.setx = objetivoX;
-                            widget.person.sety = objetivoY;
-                          });
-                        },
-                      );
-                    },
-                  );
-                },
-                onSecondaryTapDown: (details) {
-                  if (Platform.isLinux ||
-                      Platform.isMacOS ||
-                      Platform.isWindows) {
-                    //somente desktop
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: Text("Adicionar ponto $id"),
-                          content: Text(
-                              "X = ${details.localPosition.dx}\nY = ${details.localPosition.dy}"),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                "Cancelar",
-                                style: TextStyle(color: Colors.redAccent),
-                              ),
-                            ),
-                            TextButton(
-                                onPressed: () {
-                                  Map<String, dynamic> json = {
-                                    "x": details.localPosition.dx,
-                                    "y": details.localPosition.dy,
-                                    "prev": prev++,
-                                    "id": id++,
-                                  };
-
-                                  if (prev < id - 1) {
-                                    prev = id - 1;
-                                  }
-
-                                  setState(() {
-                                    points.add(json);
-                                  });
-                                  Navigator.pop(context);
-                                },
-                                child: const Text("Adicionar")),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                },
-                child: Container(
-                  margin: EdgeInsets.zero,
-                  padding: EdgeInsets.zero,
-                  child: Stack(
-                    children: [
-                      svg,
-                      PersonWidget(
-                        person: widget.person,
-                      ),
-                      ...points
-                          .map<Widget>(
-                            (e) => PointWidget(
-                              x: e["x"],
-                              y: e["y"],
-                              side: 5,
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      title: Text("Ponto ${e["id"]}"),
-                                      content: Text(
-                                          "X = ${e["x"]}\nY = ${e["y"]}\nPrev = ${e["prev"]}"),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text(
-                                            "Cancelar",
-                                            style: TextStyle(
-                                                color: Colors.redAccent),
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              points.remove(e);
-                                            });
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text(
-                                            "Remover",
-                                            style: TextStyle(
-                                                color: Colors.redAccent),
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            prev = e["id"];
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text(
-                                            "Usar como anterior",
-                                            style:
-                                                TextStyle(color: Colors.green),
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: () async {
-                                            Navigator.pop(context);
-                                            int inicio = -1;
-                                            int objetivoID = e["id"];
-                                            List tracker = [];
-
-                                            // procurar em points o id igual a objetivoID
-                                            Map<String, dynamic> point = points
-                                                .where((element) =>
-                                                    element["id"] == objetivoID)
-                                                .first;
-
-                                            // fazer todo o caminho inverso até o ponto com id igual a 1
-                                            while (point["id"] != inicio + 1) {
-                                              tracker.add(point);
-                                              point = points
-                                                  .where((element) =>
-                                                      element["id"] ==
-                                                      point["prev"])
-                                                  .first;
-                                            }
-                                            tracker.add(point);
-
-                                            //inicio
-                                            tracker = tracker.reversed.toList();
-
-                                            for (var i = 0;
-                                                i < tracker.length;
-                                                i++) {
-                                              setState(() {
-                                                widget.person.setx =
-                                                    tracker[i]["x"];
-                                                widget.person.sety =
-                                                    tracker[i]["y"];
-                                              });
-                                              await Future.delayed(
-                                                  const Duration(seconds: 2));
-                                            }
-                                          },
-                                          child: const Text(
-                                            "Objetivo",
-                                            style:
-                                                TextStyle(color: Colors.yellow),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          )
-                          .toList(),
-                    ],
-                  ),
-                ),
+      appBar: CustomAppBar(
+        height: 100,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(
+              Icons.home_work,
+              size: 30,
+              color: Colors.white,
+            ),
+            SizedBox(
+              width: 20,
+            ),
+            Text(
+              "Entrada Reitoria",
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
               ),
             ),
           ],
+        ),
+      ),
+      body: Transform.rotate(
+        angle: math.pi / 0.5,
+        child: Transform.scale(
+          scale: scaleFactor,
+          child: Stack(
+            children: [
+              AnimatedPositioned(
+                duration: flagDuration
+                    ? const Duration(milliseconds: 500)
+                    : const Duration(milliseconds: 0),
+                top: top,
+                left: left,
+                child: GestureDetector(
+                  onDoubleTap: () {
+                    setState(
+                      () {
+                        if (flag) {
+                          scaleFactor *= 2;
+                          flag = false;
+                        } else {
+                          scaleFactor *= 1 / 2;
+                          flag = true;
+                        }
+                      },
+                    );
+                  },
+                  onPanUpdate: (details) {
+                    setState(
+                      () {
+                        flagDuration = false;
+                        top = top! + details.delta.dy;
+                        left = left! + details.delta.dx;
+                      },
+                    );
+                  },
+                  onLongPressEnd: (details) {
+                    setState(
+                      () {
+                        objetivoX = details.localPosition.dx;
+                        objetivoY = details.localPosition.dy;
+
+                        setState(
+                          () {
+                            setState(() {
+                              widget.person.setx = objetivoX;
+                              widget.person.sety = objetivoY;
+                            });
+                          },
+                        );
+                      },
+                    );
+                  },
+                  onSecondaryTapDown: (details) {
+                    if (Platform.isLinux ||
+                        Platform.isMacOS ||
+                        Platform.isWindows) {
+                      //somente desktop
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text("Adicionar ponto $id"),
+                            content: Text(
+                                "X = ${details.localPosition.dx}\nY = ${details.localPosition.dy}"),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text(
+                                  "Cancelar",
+                                  style: TextStyle(color: Colors.redAccent),
+                                ),
+                              ),
+                              TextButton(
+                                  onPressed: () {
+                                    Map<String, dynamic> json = {
+                                      "x": details.localPosition.dx,
+                                      "y": details.localPosition.dy,
+                                      "prev": prev++,
+                                      "id": id++,
+                                    };
+
+                                    if (prev < id - 1) {
+                                      prev = id - 1;
+                                    }
+
+                                    setState(() {
+                                      points.add(json);
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("Adicionar")),
+                            ],
+                          );
+                        },
+                      );
+                    }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.zero,
+                    padding: EdgeInsets.zero,
+                    child: Stack(
+                      children: [
+                        svg,
+                        PersonWidget(
+                          person: widget.person,
+                        ),
+                        ...points
+                            .map<Widget>(
+                              (e) => PointWidget(
+                                x: e["x"],
+                                y: e["y"],
+                                side: 5,
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text("Ponto ${e["id"]}"),
+                                        content: Text(
+                                            "X = ${e["x"]}\nY = ${e["y"]}\nPrev = ${e["prev"]}"),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              "Cancelar",
+                                              style: TextStyle(
+                                                  color: Colors.redAccent),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: e["id"] == id
+                                                ? () {
+                                                    setState(() {
+                                                      points.remove(e);
+                                                    });
+                                                    Navigator.pop(context);
+                                                  }
+                                                : null,
+                                            child: const Text(
+                                              "Remover",
+                                              style: TextStyle(
+                                                  color: Colors.redAccent),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              prev = e["id"];
+                                              Navigator.pop(context);
+                                            },
+                                            child: const Text(
+                                              "Usar como anterior",
+                                              style: TextStyle(
+                                                  color: Colors.green),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () async {
+                                              // TODO: Caminho melhor
+                                              // fechar pop up
+                                              Navigator.pop(context);
+
+                                              // lista do caminho a ser seguido
+                                              List tracker = [];
+
+                                              // pegando o ponto inicial
+                                              Map pointInit = points
+                                                  .where((element) =>
+                                                      element["x"] ==
+                                                          widget.person.x &&
+                                                      element["y"] ==
+                                                          widget.person.y)
+                                                  .first;
+
+                                              bool flag =
+                                                  pointInit["id"] > e["id"];
+
+                                              // traçar o caminho, caso o caminho seja de volta
+                                              while (
+                                                  pointInit["id"] != e["id"]) {
+                                                if (flag) {
+                                                  pointInit = points
+                                                      .where((element) =>
+                                                          element["id"] ==
+                                                          pointInit["prev"])
+                                                      .first;
+                                                  tracker.add(pointInit);
+                                                } else {
+                                                  tracker.add(e);
+                                                  e = points
+                                                      .where((element) =>
+                                                          element["id"] ==
+                                                          e["prev"])
+                                                      .first;
+                                                }
+                                              }
+
+                                              //inicio
+                                              if (flag) {
+                                                tracker.add(e);
+                                              } else {
+                                                tracker =
+                                                    tracker.reversed.toList();
+                                              }
+
+                                              print(tracker);
+
+                                              for (var i = 0;
+                                                  i < tracker.length;
+                                                  i++) {
+                                                setState(() {
+                                                  widget.person.setx =
+                                                      tracker[i]["x"];
+                                                  widget.person.sety =
+                                                      tracker[i]["y"];
+                                                  inicio = tracker[i]["id"];
+                                                });
+
+                                                await Future.delayed(
+                                                    const Duration(seconds: 2));
+                                                centralizar(true);
+                                              }
+                                            },
+                                            child: const Text(
+                                              "Objetivo",
+                                              style: TextStyle(
+                                                  color: Colors.deepPurple),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            )
+                            .toList(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: Column(
@@ -359,18 +436,7 @@ class _SVGMapState extends State<SVGMap> {
           ),
           FloatingActionButton(
             onPressed: () {
-              setState(
-                () {
-                  flagDuration = true;
-                  top = ((widget.person.y -
-                              MediaQuery.of(context).size.height / 2) +
-                          AppBar().preferredSize.height) *
-                      -1;
-                  left = (widget.person.x -
-                          MediaQuery.of(context).size.width / 2) *
-                      -1;
-                },
-              );
+              centralizar(true);
             },
             child: const Icon(
               Icons.center_focus_strong,
