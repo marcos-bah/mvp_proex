@@ -10,6 +10,7 @@ import 'package:mvp_proex/features/widgets/dialog_edit_point.dart';
 import 'package:mvp_proex/features/widgets/dialog_point.widget.dart';
 import 'package:mvp_proex/features/widgets/person.widget.dart';
 import 'package:mvp_proex/features/widgets/point.widget.dart';
+import 'package:mvp_proex/features/widgets/point_valid.widget.dart';
 
 class SVGMap extends StatefulWidget {
   /// Define o caminho do asset:
@@ -84,8 +85,8 @@ class SVGMap extends StatefulWidget {
 class _SVGMapState extends State<SVGMap> {
   bool isAdmin = false;
 
-  double? top;
-  double? left;
+  double? top, x;
+  double? left, y;
 
   late double scaleFactor;
 
@@ -181,7 +182,10 @@ class _SVGMapState extends State<SVGMap> {
                 child: MouseRegion(
                   onHover: (event) {
                     if (isAdmin) {
-                      print(event);
+                      setState(() {
+                        x = event.localPosition.dx;
+                        y = event.localPosition.dy;
+                      });
                     }
                   },
                   child: GestureDetector(
@@ -239,6 +243,7 @@ class _SVGMapState extends State<SVGMap> {
                       child: Stack(
                         children: [
                           svg,
+
                           ...points
                               .map<Widget>(
                                 (e) => PointWidget(
@@ -256,9 +261,18 @@ class _SVGMapState extends State<SVGMap> {
                                 ),
                               )
                               .toList(),
+
                           PersonWidget(
                             person: widget.person,
                           ),
+                          ...pointValidWidget(
+                            x: x ?? 0,
+                            y: y ?? 0,
+                            width: widget.svgWidth,
+                            height: widget.svgHeight,
+                            lastPoint: points.last,
+                          ),
+                          // fazer uma cruz no centro
                         ],
                       ),
                     ),

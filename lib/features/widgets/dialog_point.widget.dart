@@ -77,7 +77,6 @@ Future dialogPointWidget(
                 }
 
                 points.add(json);
-                print(points);
 
                 Navigator.pop(context);
               },

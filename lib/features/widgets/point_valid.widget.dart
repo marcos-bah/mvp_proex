@@ -1,21 +1,46 @@
 import 'package:flutter/material.dart';
 
-class PointValidWidget extends StatelessWidget {
-  final double x;
-  final double y;
-  const PointValidWidget({Key? key, required this.x, required this.y})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
+List<Positioned> pointValidWidget({
+  required double x,
+  required double y,
+  required double width,
+  required double height,
+  var lastPoint,
+}) {
+  print(lastPoint);
+  print(x);
+  return [
+    Positioned(
       top: y,
+      left: 0,
+      child: Container(
+        width: width,
+        height: 1,
+        decoration: BoxDecoration(
+          color: lastPoint == null
+              ? Colors.green
+              : (lastPoint["y"] > y - 1 && lastPoint["y"] < y + 1)
+                  ? Colors.green
+                  : Colors.red,
+          borderRadius: BorderRadius.circular(5),
+        ),
+      ),
+    ),
+    Positioned(
+      top: 0,
       left: x,
       child: Container(
-        color: true ? Colors.red : Colors.green,
-        width: side,
-        height: side,
+        width: 1,
+        height: height,
+        decoration: BoxDecoration(
+          color: lastPoint == null
+              ? Colors.green
+              : (lastPoint["x"] > x - 1 && lastPoint["x"] < x + 1)
+                  ? Colors.green
+                  : Colors.red,
+          borderRadius: BorderRadius.circular(5),
+        ),
       ),
-    );
-  }
+    ),
+  ];
 }
