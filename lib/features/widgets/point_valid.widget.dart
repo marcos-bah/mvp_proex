@@ -5,10 +5,10 @@ List<Positioned> pointValidWidget({
   required double y,
   required double width,
   required double height,
+  required isValidX,
+  required isValidY,
   var lastPoint,
 }) {
-  print(lastPoint);
-  print(x);
   return [
     Positioned(
       top: y,
@@ -19,7 +19,7 @@ List<Positioned> pointValidWidget({
         decoration: BoxDecoration(
           color: lastPoint == null
               ? Colors.green
-              : (lastPoint["y"] > y - 1 && lastPoint["y"] < y + 1)
+              : isValidY
                   ? Colors.green
                   : Colors.red,
           borderRadius: BorderRadius.circular(5),
@@ -35,7 +35,7 @@ List<Positioned> pointValidWidget({
         decoration: BoxDecoration(
           color: lastPoint == null
               ? Colors.green
-              : (lastPoint["x"] > x - 1 && lastPoint["x"] < x + 1)
+              : isValidX
                   ? Colors.green
                   : Colors.red,
           borderRadius: BorderRadius.circular(5),

@@ -137,6 +137,11 @@ class _SVGMapState extends State<SVGMap> {
 
   @override
   Widget build(BuildContext context) {
+    bool isValidX = (points.last["x"] > ((x ?? 1) - 1) &&
+        points.last["x"] < ((x ?? 0) + 1));
+    bool isValidY = (points.last["y"] > ((y ?? 1)) - 1 &&
+        points.last["y"] < ((y ?? 0) + 1));
+    bool isValid = isValidX || isValidY;
     if (left == null && top == null) {
       top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
               AppBar().preferredSize.height) *
@@ -229,10 +234,7 @@ class _SVGMapState extends State<SVGMap> {
                       );
                     },
                     onSecondaryTapDown: (details) {
-                      if (Platform.isLinux ||
-                          Platform.isMacOS ||
-                          Platform.isWindows) {
-                        //somente desktop
+                      if (isAdmin && isValid) {
                         dialogPointWidget(context, details, id, prev, points)
                             .whenComplete(() => setState(() {}));
                       }
@@ -243,36 +245,42 @@ class _SVGMapState extends State<SVGMap> {
                       child: Stack(
                         children: [
                           svg,
-
-                          ...points
-                              .map<Widget>(
-                                (e) => PointWidget(
-                                  json: e,
-                                  side: 5,
-                                  onPressed: () {
-                                    if (Platform.isLinux ||
-                                        Platform.isMacOS ||
-                                        Platform.isWindows) {
-                                      //somente desktop
-                                      dialogEditPoint(context, e, id, prev,
-                                          inicio, centralizar, widget, points);
-                                    }
-                                  },
-                                ),
-                              )
-                              .toList(),
-
+                          if (isAdmin)
+                            ...points
+                                .map<Widget>(
+                                  (e) => PointWidget(
+                                    json: e,
+                                    side: 5,
+                                    onPressed: () {
+                                      if (isAdmin) {
+                                        //somente desktop
+                                        dialogEditPoint(
+                                            context,
+                                            e,
+                                            id,
+                                            prev,
+                                            inicio,
+                                            centralizar,
+                                            widget,
+                                            points);
+                                      }
+                                    },
+                                  ),
+                                )
+                                .toList(),
                           PersonWidget(
                             person: widget.person,
                           ),
-                          ...pointValidWidget(
-                            x: x ?? 0,
-                            y: y ?? 0,
-                            width: widget.svgWidth,
-                            height: widget.svgHeight,
-                            lastPoint: points.last,
-                          ),
-                          // fazer uma cruz no centro
+                          if (isAdmin)
+                            ...pointValidWidget(
+                              x: x ?? 0,
+                              y: y ?? 0,
+                              width: widget.svgWidth,
+                              height: widget.svgHeight,
+                              lastPoint: points.last,
+                              isValidX: isValidX,
+                              isValidY: isValidY,
+                            ),
                         ],
                       ),
                     ),
