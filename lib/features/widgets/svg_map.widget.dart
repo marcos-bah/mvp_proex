@@ -102,6 +102,7 @@ class _SVGMapState extends State<SVGMap> {
   int id = 0;
   int inicio = 0;
   List<Map<String, dynamic>> points = [];
+  Map<dynamic, Map> graph = {};
 
   void centralizar(bool flag) {
     setState(() {
@@ -130,6 +131,8 @@ class _SVGMapState extends State<SVGMap> {
       "type": TypePoint.goal.toString(),
       "name": "Entrada Reitoria"
     };
+
+    graph[id] = {1: 1};
 
     points.add(json);
     super.initState();
@@ -235,7 +238,7 @@ class _SVGMapState extends State<SVGMap> {
                     },
                     onSecondaryTapDown: (details) {
                       if (isAdmin && isValid) {
-                        dialogPointWidget(context, details, id, prev, points)
+                        dialogPointWidget(context, details, id, prev, points, graph)
                             .whenComplete(() => setState(() {}));
                       }
                     },

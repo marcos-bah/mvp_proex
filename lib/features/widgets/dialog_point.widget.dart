@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mvp_proex/app/app.constant.dart';
 
-Future dialogPointWidget(
-    BuildContext context, var details, int id, int prev, var points) {
+Future dialogPointWidget(BuildContext context, var details, int id, int prev,
+    var points, var graph) {
   return showDialog(
     context: context,
     builder: (context) {
@@ -68,6 +68,7 @@ Future dialogPointWidget(
                   "x": details.localPosition.dx,
                   "y": details.localPosition.dy,
                   "prev": prev++,
+                  "vizinhos": [1, 2, 3, 5],
                   "type": type,
                   "name": name
                 };
@@ -76,7 +77,11 @@ Future dialogPointWidget(
                   prev = id - 1;
                 }
 
+                graph.putIfAbsent(prev, () => 1);
                 points.add(json);
+
+                print(points);
+                print(graph);
 
                 Navigator.pop(context);
               },
