@@ -67,17 +67,20 @@ Future dialogPointWidget(BuildContext context, var details, int id, int prev,
                   "id": id++,
                   "x": details.localPosition.dx,
                   "y": details.localPosition.dy,
-                  "prev": prev++,
-                  "vizinhos": [1, 2, 3, 5],
+                  "vizinhos": {prev++: 1}, /*Sempre existirá um vizinho, que é o ponto anterior*/
                   "type": type,
                   "name": name
                 };
+                
+                /*O ponto anterior a este deve conter o novo ponto */
+                points[prev-1]["vizinhos"].putIfAbsent(prev, () => 1);
+                graph[prev-1] = points[prev-1]["vizinhos"];
 
                 if (prev < id - 1) {
                   prev = id - 1;
                 }
 
-                graph.putIfAbsent(prev, () => 1);
+                graph.putIfAbsent(prev, () => json["vizinhos"]);
                 points.add(json);
 
                 print(points);
