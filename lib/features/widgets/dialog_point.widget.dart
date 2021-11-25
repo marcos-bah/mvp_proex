@@ -63,18 +63,22 @@ Future dialogPointWidget(BuildContext context, var details, int id, int prev,
           ),
           TextButton(
               onPressed: () {
+                /* Calcular o peso das dinstâncias com base na diferença das coordenadas */
+                var peso = (details.localPosition.dx - points[prev]["x"]).abs() +
+                    (details.localPosition.dy - points[prev]["y"]).abs();
                 Map<String, dynamic> json = {
                   "id": id++,
                   "x": details.localPosition.dx,
                   "y": details.localPosition.dy,
-                  "vizinhos": {prev++: 1}, /*Sempre existirá um vizinho, que é o ponto anterior*/
+                  /*Sempre existirá ao menos um vizinho, que é o ponto anterior*/
+                  "vizinhos": {prev++: peso},
                   "type": type,
                   "name": name
                 };
-                
+
                 /*O ponto anterior a este deve conter o novo ponto */
-                points[prev-1]["vizinhos"].putIfAbsent(prev, () => 1);
-                graph[prev-1] = points[prev-1]["vizinhos"];
+                points[prev - 1]["vizinhos"].putIfAbsent(prev, () => peso);
+                graph[prev - 1] = points[prev - 1]["vizinhos"];
 
                 if (prev < id - 1) {
                   prev = id - 1;
