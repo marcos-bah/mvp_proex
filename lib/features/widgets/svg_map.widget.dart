@@ -239,7 +239,7 @@ class _SVGMapState extends State<SVGMap> {
                       if (isAdmin && isValid) {
                         dialogPointWidget(
                                 context, details, id, prev, points, graph)
-                            .whenComplete(() => setState(() {}));
+                            .whenComplete(() => setState(() {id++; prev++;}));
                       }
                     },
                     child: Container(
