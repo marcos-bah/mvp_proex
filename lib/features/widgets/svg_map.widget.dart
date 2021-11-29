@@ -99,10 +99,11 @@ class _SVGMapState extends State<SVGMap> {
   late double objetivoX;
   late double objetivoY;
 
-  int prev = -1;
+  int prev = 0;
   int id = 0;
   int inicio = 0;
   List<Map<String, dynamic>> points = [];
+  Map graph = {};
 
   void centralizar(bool flag) {
     setState(() {
@@ -127,11 +128,12 @@ class _SVGMapState extends State<SVGMap> {
       "id": id++,
       "x": widget.person.x,
       "y": widget.person.y,
-      "prev": prev++,
+      "vizinhos": {},
       "type": TypePoint.goal.toString(),
       "name": "Entrada Reitoria"
     };
 
+    graph[0] = {};
     points.add(json);
     super.initState();
   }
@@ -236,7 +238,8 @@ class _SVGMapState extends State<SVGMap> {
                     },
                     onSecondaryTapDown: (details) {
                       if (isAdmin && isValid) {
-                        dialogPointWidget(context, details, id, prev, points)
+                        dialogPointWidget(
+                                context, details, id, prev, points, graph)
                             .whenComplete(
                           () => setState(
                             () {
@@ -264,15 +267,15 @@ class _SVGMapState extends State<SVGMap> {
                                         //somente desktop
 
                                         dialogEditPoint(
-                                          context,
-                                          e,
-                                          id,
-                                          prev,
-                                          inicio,
-                                          centralizar,
-                                          widget,
-                                          points,
-                                        );
+                                            context,
+                                            e,
+                                            id,
+                                            prev,
+                                            inicio,
+                                            centralizar,
+                                            widget,
+                                            points,
+                                            graph);
                                       }
                                     },
                                   ),

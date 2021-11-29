@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:dijkstra/dijkstra.dart';
 
 Future dialogEditPoint(BuildContext context, var e, int id, int prev,
-    int inicio, Function centralizar, var widget, var points) {
+    int inicio, Function centralizar, var widget, var points, var graph) {
   return showDialog(
     context: context,
     builder: (context) {
@@ -52,7 +53,7 @@ Future dialogEditPoint(BuildContext context, var e, int id, int prev,
               Navigator.pop(context);
 
               // lista do caminho a ser seguido
-              List tracker = [];
+              List tracker = Dijkstra.findPathFromGraph(graph, 0, 1);
 
               // pegando o ponto inicial
               Map pointInit = points
