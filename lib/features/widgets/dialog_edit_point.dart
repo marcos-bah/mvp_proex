@@ -61,38 +61,23 @@ Future dialogEditPoint(BuildContext context, var e, int id, int prev,
                       element["y"] == widget.person.y)
                   .first;
 
-              bool flag = pointInit["id"] > e["id"];
-
               // traçar o caminho, caso o caminho seja de volta
               while (pointInit["id"] != e["id"]) {
-                if (flag) {
-                  pointInit = points
-                      .where((element) => element["id"] == pointInit["prev"])
-                      .first;
-                  tracker.add(pointInit);
-                } else {
-                  tracker.add(e);
-                  e = points
-                      .where((element) => element["id"] == e["prev"])
-                      .first;
-                }
+                tracker.add(e);
+                e = points.where((element) => element["id"] == e["prev"]).first;
               }
 
-              //inicio
-              if (flag) {
-                tracker.add(e);
-              } else {
-                tracker = tracker.reversed.toList();
-              }
+              tracker = tracker.reversed.toList();
+
+              print(tracker);
 
               for (var i = 0; i < tracker.length; i++) {
                 widget.person.setx = tracker[i]["x"];
                 widget.person.sety = tracker[i]["y"];
                 inicio = tracker[i]["id"];
+                await Future.delayed(const Duration(seconds: 2));
+                centralizar(true);
               }
-
-              await Future.delayed(const Duration(seconds: 2));
-              centralizar(true);
             },
           ),
         ],

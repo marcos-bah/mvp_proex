@@ -84,6 +84,7 @@ class SVGMap extends StatefulWidget {
 
 class _SVGMapState extends State<SVGMap> {
   bool isAdmin = false;
+  bool isLine = true;
 
   double? top, x;
   double? left, y;
@@ -107,7 +108,7 @@ class _SVGMapState extends State<SVGMap> {
     setState(() {
       flagDuration = flag;
       top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
-              AppBar().preferredSize.height) *
+              2 * AppBar().preferredSize.height) *
           -1;
       left = (widget.person.x - MediaQuery.of(context).size.width / 2) * -1;
     });
@@ -236,7 +237,14 @@ class _SVGMapState extends State<SVGMap> {
                     onSecondaryTapDown: (details) {
                       if (isAdmin && isValid) {
                         dialogPointWidget(context, details, id, prev, points)
-                            .whenComplete(() => setState(() {}));
+                            .whenComplete(
+                          () => setState(
+                            () {
+                              id++;
+                              prev++;
+                            },
+                          ),
+                        );
                       }
                     },
                     child: Container(
@@ -254,15 +262,17 @@ class _SVGMapState extends State<SVGMap> {
                                     onPressed: () {
                                       if (isAdmin) {
                                         //somente desktop
+
                                         dialogEditPoint(
-                                            context,
-                                            e,
-                                            id,
-                                            prev,
-                                            inicio,
-                                            centralizar,
-                                            widget,
-                                            points);
+                                          context,
+                                          e,
+                                          id,
+                                          prev,
+                                          inicio,
+                                          centralizar,
+                                          widget,
+                                          points,
+                                        );
                                       }
                                     },
                                   ),
@@ -271,7 +281,7 @@ class _SVGMapState extends State<SVGMap> {
                           PersonWidget(
                             person: widget.person,
                           ),
-                          if (isAdmin)
+                          if (isAdmin && isLine)
                             ...pointValidWidget(
                               x: x ?? 0,
                               y: y ?? 0,
@@ -293,7 +303,28 @@ class _SVGMapState extends State<SVGMap> {
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
+          isAdmin
+              ? FloatingActionButton(
+                  onPressed: () {
+                    setState(
+                      () {
+                        isLine = !isLine;
+                      },
+                    );
+                  },
+                  child: const Icon(
+                    Icons.line_style,
+                    size: 30,
+                  ),
+                )
+              : Container(),
+          isAdmin
+              ? const SizedBox(
+                  height: 20,
+                )
+              : Container(),
           (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
               ? FloatingActionButton(
                   backgroundColor: Colors.red[900],

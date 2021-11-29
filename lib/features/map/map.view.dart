@@ -10,7 +10,7 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
-  PersonModel person = PersonModel(639, 274, 0, 0, 0, 0);
+  PersonModel person = PersonModel(639, 274, 0, -22.2467586, -45.0171148, 0);
 
   @override
   Widget build(BuildContext context) {

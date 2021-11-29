@@ -64,10 +64,10 @@ Future dialogPointWidget(
           TextButton(
               onPressed: () {
                 Map<String, dynamic> json = {
-                  "id": id++,
+                  "id": id,
                   "x": details.localPosition.dx,
                   "y": details.localPosition.dy,
-                  "prev": prev++,
+                  "prev": prev,
                   "type": type,
                   "name": name
                 };
