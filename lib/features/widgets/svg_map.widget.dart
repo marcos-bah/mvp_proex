@@ -11,6 +11,7 @@ import 'package:mvp_proex/features/widgets/dialog_point.widget.dart';
 import 'package:mvp_proex/features/widgets/person.widget.dart';
 import 'package:mvp_proex/features/widgets/point.widget.dart';
 import 'package:mvp_proex/features/widgets/point_valid.widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SVGMap extends StatefulWidget {
   /// Define o caminho do asset:
@@ -99,19 +100,21 @@ class _SVGMapState extends State<SVGMap> {
   late double objetivoX;
   late double objetivoY;
 
-  int prev = 0;
   int id = 0;
   int inicio = 0;
   List<Map<String, dynamic>> points = [];
   Map graph = {};
+  List tracker = [];
 
-  void centralizar(bool flag) {
-    setState(() {
+  void centralizar(bool flag){
+    setState(() async{
       flagDuration = flag;
       top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
               2 * AppBar().preferredSize.height) *
           -1;
       left = (widget.person.x - MediaQuery.of(context).size.width / 2) * -1;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('pos', 0);
     });
   }
 
@@ -132,6 +135,8 @@ class _SVGMapState extends State<SVGMap> {
       "type": TypePoint.goal.toString(),
       "name": "Entrada Reitoria"
     };
+
+    resetSharedPreferences();
 
     graph[0] = {};
     points.add(json);
@@ -239,14 +244,13 @@ class _SVGMapState extends State<SVGMap> {
                     onSecondaryTapDown: (details) {
                       if (isAdmin && isValid) {
                         dialogPointWidget(
-                                context, details, id, prev, points, graph)
+                                context, details, id, points, graph)
                             .whenComplete(
                           () => setState(
                             () {
                               id++;
-                              prev++;
-                              print("ddd");
-                              print(graph);
+                              //print("ddd");
+                              //print(graph);
                             },
                           ),
                         );
@@ -272,7 +276,6 @@ class _SVGMapState extends State<SVGMap> {
                                             context,
                                             e,
                                             id,
-                                            prev,
                                             inicio,
                                             centralizar,
                                             widget,
@@ -449,4 +452,12 @@ class _SVGMapState extends State<SVGMap> {
       ),
     );
   }
+void resetSharedPreferences() async{
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+              
+      await prefs.setInt('prev', 0);
+      await prefs.setInt('pos', 0);
+  }
+
+  
 }
