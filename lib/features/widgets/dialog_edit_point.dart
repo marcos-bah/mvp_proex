@@ -66,6 +66,7 @@ Future dialogEditPoint(
               int usuarioPos = (prefs.getInt('pos') ?? 0);
 
               List trackers = Dijkstra.findPathFromGraph(graph, usuarioPos, e["id"]);
+              
               List<String> trackersString =
                   trackers.map((i) => i.toString()).toList();
 
@@ -75,7 +76,7 @@ Future dialogEditPoint(
               await prefs.setStringList('tracker', trackersString);
 
               await prefs.setInt('pos', e["id"]);
-              print(trackerOriginal);
+              print(trackers);
             },
           ),
         ],

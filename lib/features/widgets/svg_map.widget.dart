@@ -291,6 +291,7 @@ class _SVGMapState extends State<SVGMap> {
                           ),
                           if (isAdmin && isLine)
                             ...pointValidWidget(
+                              //TODO: Colocar sharedPreferences no X e Y
                               x: x ?? 0,
                               y: y ?? 0,
                               width: widget.svgWidth,

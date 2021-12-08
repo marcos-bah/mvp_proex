@@ -69,9 +69,9 @@ Future dialogPointWidget(
               
                 int prev = (prefs.getInt('prev') ?? 0);
                 print(prev);
-                var peso =
+                int peso =(
                     (details.localPosition.dx - points[prev]["x"]).abs() +
-                        (details.localPosition.dy - points[prev]["y"]).abs();
+                        (details.localPosition.dy - points[prev]["y"]).abs()).round();
                 Map<String, dynamic> json = {
                   "id": id,
                   "x": details.localPosition.dx,
