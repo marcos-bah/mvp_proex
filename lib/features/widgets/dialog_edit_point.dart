@@ -2,15 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:dijkstra/dijkstra.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-Future dialogEditPoint(
-    BuildContext context,
-    var e,
-    int id,
-    int inicio,
-    Function centralizar,
-    var widget,
-    var points,
-    var graph) {
+Future dialogEditPoint(BuildContext context, var e, int id, int inicio,
+    Function centralizar, var widget, var points, var graph) {
   return showDialog(
     context: context,
     builder: (context) {
@@ -42,7 +35,7 @@ Future dialogEditPoint(
             ),
           ),
           TextButton(
-            onPressed: () async{
+            onPressed: () async {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setInt('prev', e["id"]);
               Navigator.pop(context);
@@ -65,8 +58,9 @@ Future dialogEditPoint(
               // lista do caminho a ser seguido
               int usuarioPos = (prefs.getInt('pos') ?? 0);
 
-              List trackers = Dijkstra.findPathFromGraph(graph, usuarioPos, e["id"]);
-              
+              List trackers =
+                  Dijkstra.findPathFromGraph(graph, usuarioPos, e["id"]);
+
               List<String> trackersString =
                   trackers.map((i) => i.toString()).toList();
 
@@ -77,6 +71,33 @@ Future dialogEditPoint(
 
               await prefs.setInt('pos', e["id"]);
               print(trackers);
+            },
+          ),
+          TextButton(
+            child: const Text(
+              "Tornar vizinho",
+              style: TextStyle(color: Colors.redAccent),
+            ),
+            onPressed: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+
+              int prev = (prefs.getInt('prev') ?? 0);
+              print(prev);
+              int peso = ((e["x"] - points[prev]["x"]).abs() +
+                      (e["y"] - points[prev]["y"]).abs())
+                  .round();
+
+              /*O ponto anterior a este deve conter o novo ponto */
+              
+              points[e["id"]]["vizinhos"].putIfAbsent(prev, () => peso);
+              points[prev]["vizinhos"].putIfAbsent(e["id"], () => peso);
+              graph[prev] = points[prev]["vizinhos"];
+
+              graph.putIfAbsent(e["id"], () => e["id"]["vizinhos"]);
+
+              await prefs.setInt('prev', e["id"]);
+              print(points);
+              print(graph);
             },
           ),
         ],
