@@ -1,0 +1,4 @@
+class SVGMapController {
+  //value notifier
+
+}
