@@ -11,6 +11,7 @@ import 'package:mvp_proex/features/widgets/dialog_point.widget.dart';
 import 'package:mvp_proex/features/widgets/person.widget.dart';
 import 'package:mvp_proex/features/widgets/point.widget.dart';
 import 'package:mvp_proex/features/widgets/point_valid.widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SVGMap extends StatefulWidget {
   /// Define o caminho do asset:
@@ -99,19 +100,26 @@ class _SVGMapState extends State<SVGMap> {
   late double objetivoX;
   late double objetivoY;
 
-  int prev = 0;
   int id = 0;
   int inicio = 0;
   List<Map<String, dynamic>> points = [];
   Map graph = {};
+  List tracker = [];
+  late Map<String, dynamic> last;
 
   void centralizar(bool flag) {
-    setState(() {
-      flagDuration = flag;
-      top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
-              2 * AppBar().preferredSize.height) *
-          -1;
-      left = (widget.person.x - MediaQuery.of(context).size.width / 2) * -1;
+    setState(
+      () {
+        flagDuration = flag;
+        top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
+                2 * AppBar().preferredSize.height) *
+            -1;
+        left = (widget.person.x - MediaQuery.of(context).size.width / 2) * -1;
+      },
+    );
+    setState(() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('pos', 0);
     });
   }
 
@@ -133,18 +141,25 @@ class _SVGMapState extends State<SVGMap> {
       "name": "Entrada Reitoria"
     };
 
+    resetSharedPreferences();
+
     graph[0] = {};
     points.add(json);
+    last = points.last;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isValidX = (points.last["x"] > ((x ?? 1) - 1) &&
-        points.last["x"] < ((x ?? 0) + 1));
-    bool isValidY = (points.last["y"] > ((y ?? 1)) - 1 &&
-        points.last["y"] < ((y ?? 0) + 1));
-    bool isValid = isValidX || isValidY;
+    bool isValidX = false;
+    bool isValidY = false;
+    bool isValid = false;
+    if (last.isNotEmpty) {
+      isValidX = (last["x"] > ((x ?? 1) - 1) && last["x"] < ((x ?? 0) + 1));
+      isValidY = (last["y"] > ((y ?? 1)) - 1 && last["y"] < ((y ?? 0) + 1));
+      isValid = isValidX || isValidY;
+    }
+
     if (left == null && top == null) {
       top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
               AppBar().preferredSize.height) *
@@ -238,15 +253,12 @@ class _SVGMapState extends State<SVGMap> {
                     },
                     onSecondaryTapDown: (details) {
                       if (isAdmin && isValid) {
-                        dialogPointWidget(
-                                context, details, id, prev, points, graph)
+                        dialogPointWidget(context, details, id, points, graph)
                             .whenComplete(
                           () => setState(
                             () {
                               id++;
-                              prev++;
-                              print("ddd");
-                              print(graph);
+                              last = points.last;
                             },
                           ),
                         );
@@ -266,18 +278,24 @@ class _SVGMapState extends State<SVGMap> {
                                     side: 5,
                                     onPressed: () {
                                       if (isAdmin) {
-                                        //somente desktop
-
                                         dialogEditPoint(
-                                            context,
-                                            e,
-                                            id,
-                                            prev,
-                                            inicio,
-                                            centralizar,
-                                            widget,
-                                            points,
-                                            graph);
+                                                context,
+                                                e,
+                                                id,
+                                                points.firstWhere((element) =>
+                                                    element["x"] ==
+                                                        widget.person.x &&
+                                                    element["y"] ==
+                                                        widget.person.y)["id"],
+                                                centralizar,
+                                                widget,
+                                                points,
+                                                graph)
+                                            .then((value) {
+                                          if (value) {
+                                            last = e;
+                                          }
+                                        });
                                       }
                                     },
                                   ),
@@ -288,6 +306,7 @@ class _SVGMapState extends State<SVGMap> {
                           ),
                           if (isAdmin && isLine)
                             ...pointValidWidget(
+                              //TODO: Colocar sharedPreferences no X e Y
                               x: x ?? 0,
                               y: y ?? 0,
                               width: widget.svgWidth,
@@ -448,5 +467,12 @@ class _SVGMapState extends State<SVGMap> {
         ),
       ),
     );
+  }
+
+  void resetSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt('prev', 0);
+    await prefs.setInt('pos', 0);
   }
 }

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:dijkstra/dijkstra.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-Future dialogEditPoint(BuildContext context, var e, int id, int prev,
-    int inicio, Function centralizar, var widget, var points, var graph) {
-  return showDialog(
+Future dialogEditPoint(BuildContext context, var e, int id, int inicio,
+    Function centralizar, var widget, var points, var graph) async {
+  bool flag = false;
+  await showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
         title: Text("Ponto ${e["id"]}"),
-        content: Text("X = ${e["x"]}\nY = ${e["y"]}\nPrev = ${e["prev"]}"),
+        content:
+            Text("X = ${e["x"]}\nY = ${e["y"]}\nVizinhos = ${e["vizinhos"]}"),
         actions: [
           TextButton(
             onPressed: () {
@@ -33,8 +36,10 @@ Future dialogEditPoint(BuildContext context, var e, int id, int prev,
             ),
           ),
           TextButton(
-            onPressed: () {
-              prev = e["id"];
+            onPressed: () async {
+              flag = true;
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.setInt('prev', e["id"]);
               Navigator.pop(context);
             },
             child: const Text(
@@ -51,38 +56,69 @@ Future dialogEditPoint(BuildContext context, var e, int id, int prev,
               // TODO: Caminho melhor
               // fechar pop up
               Navigator.pop(context);
-
+              SharedPreferences prefs = await SharedPreferences.getInstance();
               // lista do caminho a ser seguido
-              List tracker = Dijkstra.findPathFromGraph(graph, 0, 1);
+              int usuarioPos = inicio;
 
-              // pegando o ponto inicial
-              Map pointInit = points
-                  .where((element) =>
-                      element["x"] == widget.person.x &&
-                      element["y"] == widget.person.y)
-                  .first;
+              List trackers =
+                  Dijkstra.findPathFromGraph(graph, usuarioPos, e["id"]);
 
-              // traçar o caminho, caso o caminho seja de volta
-              while (pointInit["id"] != e["id"]) {
-                tracker.add(e);
-                e = points.where((element) => element["id"] == e["prev"]).first;
+              List<String> trackersString =
+                  trackers.map((i) => i.toString()).toList();
+
+              List<String> tracker = (prefs.getStringList('tracker') ?? []);
+              List<int> trackerOriginal =
+                  tracker.map((i) => int.parse(i)).toList();
+              await prefs.setStringList('tracker', trackersString);
+
+              await prefs.setInt('pos', e["id"]);
+              print("estou em: ${inicio}");
+              var json;
+              for (var i = 1; i < trackers.length; i++) {
+                json = points.firstWhere((ob) => ob["id"] == trackers[i]);
+                print(json);
+                widget.person.setx = json["x"];
+                widget.person.sety = json["y"];
+                inicio = json["id"];
+                await Future.delayed(const Duration(seconds: 3)).then((value) {
+                  // centralizar(true);
+                });
               }
 
-              tracker = tracker.reversed.toList();
+              print("estou agr em: ${json["id"]}");
+              print("percorreu: ${trackersString}");
+            },
+          ),
+          TextButton(
+            child: const Text(
+              "Tornar vizinho",
+              style: TextStyle(color: Colors.redAccent),
+            ),
+            onPressed: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
 
-              print(tracker);
+              int prev = (prefs.getInt('prev') ?? 0);
+              print(prev);
+              int peso = ((e["x"] - points[prev]["x"]).abs() +
+                      (e["y"] - points[prev]["y"]).abs())
+                  .round();
 
-              for (var i = 0; i < tracker.length; i++) {
-                widget.person.setx = tracker[i]["x"];
-                widget.person.sety = tracker[i]["y"];
-                inicio = tracker[i]["id"];
-                await Future.delayed(const Duration(seconds: 2));
-                centralizar(true);
-              }
+              /*O ponto anterior a este deve conter o novo ponto */
+
+              points[e["id"]]["vizinhos"].putIfAbsent(prev, () => peso);
+              points[prev]["vizinhos"].putIfAbsent(e["id"], () => peso);
+              graph[prev] = points[prev]["vizinhos"];
+
+              graph.putIfAbsent(e["id"], () => e["id"]["vizinhos"]);
+
+              await prefs.setInt('prev', e["id"]);
+              print(points);
+              print(graph);
             },
           ),
         ],
       );
     },
   );
+  return Future.delayed(Duration(milliseconds: 0)).then((value) => flag);
 }
