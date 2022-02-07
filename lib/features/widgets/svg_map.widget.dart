@@ -238,14 +238,12 @@ class _SVGMapState extends State<SVGMap> {
                     },
                     onSecondaryTapDown: (details) {
                       if (isAdmin && isValid) {
-                        dialogPointWidget(
-                                context, details, id, prev, points, graph)
+                        dialogPointWidget(context, details, id, points, graph)
                             .whenComplete(
                           () => setState(
                             () {
                               id++;
                               prev++;
-                              print(graph);
                             },
                           ),
                         );

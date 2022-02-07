@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mvp_proex/app/app.constant.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-Future dialogPointWidget(BuildContext context, var details, int id, int prev,
-    var points, var graph) {
+Future dialogPointWidget(
+    BuildContext context, var details, int id, var points, var graph) {
   return showDialog(
     context: context,
     builder: (context) {
@@ -62,11 +63,15 @@ Future dialogPointWidget(BuildContext context, var details, int id, int prev,
             ),
           ),
           TextButton(
-              onPressed: () {
+              onPressed: () async {
                 /* Calcular o peso das dinstâncias com base na diferença das coordenadas */
-                var peso =
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+              
+                int prev = (prefs.getInt('prev') ?? 0);
+                print(prev);
+                int peso =(
                     (details.localPosition.dx - points[prev]["x"]).abs() +
-                        (details.localPosition.dy - points[prev]["y"]).abs();
+                        (details.localPosition.dy - points[prev]["y"]).abs()).round();
                 Map<String, dynamic> json = {
                   "id": id,
                   "x": details.localPosition.dx,
@@ -76,20 +81,29 @@ Future dialogPointWidget(BuildContext context, var details, int id, int prev,
                   "type": type,
                   "name": name
                 };
+                print(prev);
 
                 /*O ponto anterior a este deve conter o novo ponto */
-                points[prev - 1]["vizinhos"].putIfAbsent(prev, () => peso);
+                points[prev - 1]["vizinhos"].putIfAbsent(id, () => peso);
                 graph[prev - 1] = points[prev - 1]["vizinhos"];
 
-                if (prev < id - 1) {
-                  prev = id - 1;
-                }
 
-                graph.putIfAbsent(prev, () => json["vizinhos"]);
+
+                graph.putIfAbsent(id, () => json["vizinhos"]);
                 points.add(json);
 
+                await prefs.setInt('prev', id);
                 print(points);
                 print(graph);
+
+                List<String> myList = (prefs.getStringList('tracker') ?? []);
+                List<int> myOriginaList =
+                    myList.map((i) => int.parse(i)).toList();
+                print('Your list  ${myOriginaList}');
+
+                int usuarioPos = (prefs.getInt('pos') ?? 0);
+
+                print('Usuario pos ${usuarioPos}');
 
                 Navigator.pop(context);
               },
