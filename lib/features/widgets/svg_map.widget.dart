@@ -245,7 +245,6 @@ class _SVGMapState extends State<SVGMap> {
                             () {
                               id++;
                               prev++;
-                              print("ddd");
                               print(graph);
                             },
                           ),
