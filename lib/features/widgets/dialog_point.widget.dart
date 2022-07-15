@@ -66,12 +66,13 @@ Future dialogPointWidget(
               onPressed: () async {
                 /* Calcular o peso das dinstâncias com base na diferença das coordenadas */
                 SharedPreferences prefs = await SharedPreferences.getInstance();
-              
+
                 int prev = (prefs.getInt('prev') ?? 0);
                 print(prev);
-                int peso =(
-                    (details.localPosition.dx - points[prev]["x"]).abs() +
-                        (details.localPosition.dy - points[prev]["y"]).abs()).round();
+                int peso = ((details.localPosition.dx - points[prev]["x"])
+                            .abs() +
+                        (details.localPosition.dy - points[prev]["y"]).abs())
+                    .round();
                 Map<String, dynamic> json = {
                   "id": id,
                   "x": details.localPosition.dx,
@@ -86,8 +87,6 @@ Future dialogPointWidget(
                 /*O ponto anterior a este deve conter o novo ponto */
                 points[prev - 1]["vizinhos"].putIfAbsent(id, () => peso);
                 graph[prev - 1] = points[prev - 1]["vizinhos"];
-
-
 
                 graph.putIfAbsent(id, () => json["vizinhos"]);
                 points.add(json);

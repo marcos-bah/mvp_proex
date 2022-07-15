@@ -105,7 +105,7 @@ class _SVGMapState extends State<SVGMap> {
   List<Map<String, dynamic>> points = [];
   Map graph = {};
 
-  void centralizar(bool flag) {
+  Future<void> centralizar(bool flag) async {
     setState(() {
       flagDuration = flag;
       top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
@@ -142,9 +142,12 @@ class _SVGMapState extends State<SVGMap> {
   Widget build(BuildContext context) {
     bool isValidX = (points.last["x"] > ((x ?? 1) - 1) &&
         points.last["x"] < ((x ?? 0) + 1));
+
     bool isValidY = (points.last["y"] > ((y ?? 1)) - 1 &&
         points.last["y"] < ((y ?? 0) + 1));
+
     bool isValid = isValidX || isValidY;
+
     if (left == null && top == null) {
       top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
               AppBar().preferredSize.height) *
@@ -225,14 +228,8 @@ class _SVGMapState extends State<SVGMap> {
                           objetivoX = details.localPosition.dx;
                           objetivoY = details.localPosition.dy;
 
-                          setState(
-                            () {
-                              setState(() {
-                                widget.person.setx = objetivoX;
-                                widget.person.sety = objetivoY;
-                              });
-                            },
-                          );
+                          widget.person.setx = objetivoX;
+                          widget.person.sety = objetivoY;
                         },
                       );
                     },
