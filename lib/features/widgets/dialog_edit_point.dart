@@ -10,7 +10,7 @@ Future dialogEditPoint(
     Function centralizar,
     var widget,
     List<Map<dynamic, dynamic>> points,
-    var graph) {
+    var graph) async {
   return showDialog(
     context: context,
     builder: (context) {
@@ -60,19 +60,34 @@ Future dialogEditPoint(
               // fechar pop up
               Navigator.pop(context);
 
-              // lista do caminho a ser seguido
-              List tracker = Dijkstra.findPathFromGraph(graph, 0, 1);
-              tracker.removeAt(0);
-              tracker.add(e["id"]);
+              //onde estou
+              int here = 0;
 
+              points.forEach((element) {
+                if (element['x'] == widget.person.x &&
+                    element['y'] == widget.person.y) {
+                  here = element['id'];
+                }
+              });
+
+              // lista do caminho a ser seguido
+              List tracker = Dijkstra.findPathFromGraph(graph, here, e["id"]);
+
+              //se removesse o primeiro ponto ele iria pensar que já está nele,
+              //então iria pular o primeiro
+              // tracker.removeAt(0);
+
+              print(tracker);
+
+              centralizar(true);
               for (var i = 0; i < tracker.length; i++) {
                 widget.person.setx = points
                     .firstWhere((element) => element['id'] == tracker[i])['x'];
                 widget.person.sety = points
                     .firstWhere((element) => element['id'] == tracker[i])['y'];
                 inicio = tracker[i];
-                await Future.delayed(const Duration(seconds: 3));
                 centralizar(true);
+                await Future.delayed(const Duration(seconds: 3));
               }
 
               // pegando o ponto inicial
