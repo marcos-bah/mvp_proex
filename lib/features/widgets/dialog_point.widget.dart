@@ -64,7 +64,7 @@ Future dialogPointWidget(
           ),
           TextButton(
               onPressed: () async {
-                /* Calcular o peso das dinstâncias com base na diferença das coordenadas */
+                /* Calcular o peso das distâncias com base na diferença das coordenadas */
                 SharedPreferences prefs = await SharedPreferences.getInstance();
 
                 int prev = (prefs.getInt('prev') ?? 0);
@@ -84,7 +84,7 @@ Future dialogPointWidget(
                 };
                 print(prev);
 
-                /*O ponto anterior a este deve conter o novo ponto */
+                /* O ponto anterior a este deve conter o novo ponto */
                 points[prev - 1]["vizinhos"].putIfAbsent(id, () => peso);
                 graph[prev - 1] = points[prev - 1]["vizinhos"];
 
@@ -98,11 +98,11 @@ Future dialogPointWidget(
                 List<String> myList = (prefs.getStringList('tracker') ?? []);
                 List<int> myOriginaList =
                     myList.map((i) => int.parse(i)).toList();
-                print('Your list  ${myOriginaList}');
+                print('Your list  $myOriginaList');
 
                 int usuarioPos = (prefs.getInt('pos') ?? 0);
 
-                print('Usuario pos ${usuarioPos}');
+                print('Usuario pos $usuarioPos');
 
                 Navigator.pop(context);
               },

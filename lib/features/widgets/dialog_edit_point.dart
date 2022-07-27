@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dijkstra/dijkstra.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:mvp_proex/features/widgets/dialog_qrcode.widget.dart';
 
 Future dialogEditPoint(
     BuildContext context,
@@ -10,12 +12,11 @@ Future dialogEditPoint(
     Function centralizar,
     var widget,
     List<Map<dynamic, dynamic>> points,
-    var graph) async {
+    var graph) {
   return showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: Text("Ponto ${e["id"]}"),
         content: Text("X = ${e["x"]}\nY = ${e["y"]}\nPrev = ${e['vizinhos']}"),
         actions: [
           TextButton(
@@ -28,16 +29,23 @@ Future dialogEditPoint(
             ),
           ),
           TextButton(
-            onPressed: e["id"] == id
-                ? () {
-                    points.remove(e);
+            onPressed: () {
+              points.remove(e);
 
-                    Navigator.pop(context);
-                  }
-                : null,
+              Navigator.pop(context);
+            },
             child: const Text(
               "Remover",
               style: TextStyle(color: Colors.redAccent),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              qrDialog(context, e["id"]);
+            },
+            child: const Text(
+              "Gerar QRCode",
+              style: TextStyle(color: Colors.green),
             ),
           ),
           TextButton(
@@ -73,21 +81,16 @@ Future dialogEditPoint(
               // lista do caminho a ser seguido
               List tracker = Dijkstra.findPathFromGraph(graph, here, e["id"]);
 
-              //se removesse o primeiro ponto ele iria pensar que já está nele,
-              //então iria pular o primeiro
-              // tracker.removeAt(0);
+              tracker.removeAt(0);
 
-              print(tracker);
-
-              centralizar(true);
               for (var i = 0; i < tracker.length; i++) {
                 widget.person.setx = points
                     .firstWhere((element) => element['id'] == tracker[i])['x'];
                 widget.person.sety = points
                     .firstWhere((element) => element['id'] == tracker[i])['y'];
                 inicio = tracker[i];
-                centralizar(true);
                 await Future.delayed(const Duration(seconds: 3));
+                centralizar(true);
               }
 
               // pegando o ponto inicial

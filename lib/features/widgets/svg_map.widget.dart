@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter_svg/svg.dart';
@@ -105,7 +106,7 @@ class _SVGMapState extends State<SVGMap> {
   List<Map<String, dynamic>> points = [];
   Map graph = {};
 
-  Future<void> centralizar(bool flag) async {
+  void centralizar(bool flag) {
     setState(() {
       flagDuration = flag;
       top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
