@@ -12,6 +12,7 @@ import 'package:mvp_proex/features/widgets/dialog_point.widget.dart';
 import 'package:mvp_proex/features/widgets/person.widget.dart';
 import 'package:mvp_proex/features/widgets/point.widget.dart';
 import 'package:mvp_proex/features/widgets/point_valid.widget.dart';
+import 'package:mvp_proex/features/widgets/qrcode.widget.dart';
 
 class SVGMap extends StatefulWidget {
   /// Define o caminho do asset:
@@ -158,22 +159,44 @@ class _SVGMapState extends State<SVGMap> {
     return Scaffold(
       appBar: CustomAppBar(
         height: 100,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(
-              Icons.home_work,
-              size: 30,
-              color: Colors.white,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.home_work,
+                  size: 30,
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Text(
+                  "Entrada Reitoria",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(
-              width: 20,
-            ),
-            Text(
-              "Entrada Reitoria",
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
+            Positioned(
+              top: -10,
+              left: 0,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.qr_code_outlined,
+                  size: 35,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => Qrcodescannermvp()));
+                },
               ),
             ),
           ],
@@ -307,6 +330,7 @@ class _SVGMapState extends State<SVGMap> {
         children: [
           isAdmin
               ? FloatingActionButton(
+                  heroTag: "btnLine",
                   onPressed: () {
                     setState(
                       () {
@@ -327,6 +351,7 @@ class _SVGMapState extends State<SVGMap> {
               : Container(),
           (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
               ? FloatingActionButton(
+                  heroTag: "btnAdmin",
                   backgroundColor: Colors.red[900],
                   onPressed: () {
                     setState(
@@ -357,6 +382,7 @@ class _SVGMapState extends State<SVGMap> {
             height: 20,
           ),
           FloatingActionButton(
+            heroTag: "btnScale",
             onPressed: () {
               setState(
                 () {
@@ -379,6 +405,7 @@ class _SVGMapState extends State<SVGMap> {
             height: 20,
           ),
           FloatingActionButton(
+            heroTag: "btnCentralizar",
             onPressed: () {
               centralizar(true);
             },
