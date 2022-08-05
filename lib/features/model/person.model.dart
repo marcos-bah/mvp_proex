@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
 class PersonModel {
@@ -53,11 +53,13 @@ class PersonModel {
 
   // construtor
   PersonModel(this._x, this._y, this._z, this._lat, this._lon, this._alt) {
-    if (Platform.isAndroid) {
-      while (true) {
-        Future.delayed(Duration(seconds: 2)).then((value) =>
-            _determinePosition().then((value) => _lat +=
-                _lat - double.parse(value.latitude.toStringAsFixed(3))));
+    if(!kIsWeb){
+      if (Platform.isAndroid) {
+        while (true) {
+          Future.delayed(Duration(seconds: 2)).then((value) =>
+              _determinePosition().then((value) => _lat +=
+                  _lat - double.parse(value.latitude.toStringAsFixed(3))));
+        }
       }
     }
   }

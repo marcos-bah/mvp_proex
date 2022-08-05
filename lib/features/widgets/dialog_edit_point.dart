@@ -41,21 +41,7 @@ Future dialogEditPoint(
           ),
           TextButton(
             onPressed: () {
-              // Mostra o QR Code direto no dialog do ponto
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return Container(
-                      alignment: Alignment.center,
-                      child: QrImage(
-                          data: e["id"].toString(),
-                          size: 150,
-                          errorCorrectionLevel: QrErrorCorrectLevel.H,
-                          backgroundColor: Colors.white,
-                          gapless: true),
-                  );
-                },
-              );
+              qrDialog(context, e);
             },
             child: const Text(
               "Gerar QRCode",
