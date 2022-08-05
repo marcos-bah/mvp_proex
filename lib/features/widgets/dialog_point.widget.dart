@@ -9,6 +9,7 @@ Future dialogPointWidget(
     builder: (context) {
       Object? type = TypePoint.path.toString();
       String name = "Caminho";
+      String descricao = "Descricao";
       return AlertDialog(
         title: Text("Adicionar ponto $id"),
         content: Column(
@@ -39,13 +40,26 @@ Future dialogPointWidget(
             TextFormField(
               initialValue: name,
               decoration: const InputDecoration(
-                labelText: "Nome do objetivo",
+                labelText: "Nome do ponto",
               ),
               onChanged: (value) {
                 if (value.isEmpty) {
                   name = "Objetivo $id";
                 } else {
                   name = value;
+                }
+              },
+            ),
+            TextFormField(
+              initialValue: descricao,
+              decoration: const InputDecoration(
+                labelText: "Descrição do ponto",
+              ),
+              onChanged: (value) {
+                if (value.isEmpty) {
+                  descricao = "Descricao";
+                } else {
+                  descricao = value;
                 }
               },
             )
@@ -77,6 +91,7 @@ Future dialogPointWidget(
                   "id": id,
                   "x": details.localPosition.dx,
                   "y": details.localPosition.dy,
+                  "descricao": descricao,
                   /*Sempre existirá ao menos um vizinho, que é o ponto anterior*/
                   "vizinhos": {prev++: peso},
                   "type": type,

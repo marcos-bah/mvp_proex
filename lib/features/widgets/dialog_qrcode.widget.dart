@@ -14,7 +14,7 @@ Future qrDialog(BuildContext context, dynamic e) async {
         child: Container(
           alignment: Alignment.center,
           constraints: const BoxConstraints(
-              minWidth: 10, maxWidth: 320, minHeight: 10, maxHeight: 250),
+              minWidth: 10, maxWidth: 400, minHeight: 10, maxHeight: 350),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(5),
@@ -38,6 +38,10 @@ Future qrDialog(BuildContext context, dynamic e) async {
                     errorCorrectionLevel: QrErrorCorrectLevel.H,
                     backgroundColor: Colors.white,
                     gapless: true),
+              ),
+              Text(e["descricao"]),
+              const SizedBox(
+                height: 3,
               ),
               Row(
                 //// Colocar botões aqui

@@ -17,7 +17,14 @@ Future dialogEditPoint(
     context: context,
     builder: (context) {
       return AlertDialog(
-        content: Text("X = ${e["x"]}\nY = ${e["y"]}\nPrev = ${e['vizinhos']}"),
+        content: SingleChildScrollView(
+          child: Column(children: [
+            Text("Nome do Ponto: ${e["name"]}",
+                style: const TextStyle(fontSize: 20)),
+            Text(
+                "\nID do Ponto: ${e["id"]}\nX = ${e["x"].toStringAsPrecision(6)}\nY = ${e["y"].toStringAsPrecision(6)}\nDescrição: ${e["descricao"]}"),
+          ]),
+        ),
         actions: [
           TextButton(
             onPressed: () {
