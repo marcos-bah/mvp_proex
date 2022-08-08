@@ -125,7 +125,7 @@ class _SVGMapState extends State<SVGMap> {
       color: Colors.white,
       fit: BoxFit.none,
     );
-    
+
     Map<String, dynamic> json = {
       "id": id++,
       "x": widget.person.x,
@@ -182,6 +182,7 @@ class _SVGMapState extends State<SVGMap> {
                 ),
               ],
             ),
+            //Caso queira navegar para outra página
             Positioned(
               top: -10,
               left: 0,

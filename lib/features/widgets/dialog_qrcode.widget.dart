@@ -1,58 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:gallery_saver/gallery_saver.dart';
-import 'package:path_provider/path_provider.dart';
+import 'navigation_printqr.widget.dart';
 
 Future qrDialog(BuildContext context, dynamic e) async {
-  final qrKey = GlobalKey();
-
   return showDialog(
     context: context,
     builder: (context) {
-      return Center(
+      return Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        alignment: Alignment.center,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 500, vertical: 24),
         child: Container(
-          alignment: Alignment.center,
-          constraints: const BoxConstraints(
-              minWidth: 10, maxWidth: 400, minHeight: 10, maxHeight: 350),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(5),
-          ),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 e["name"],
-                style: const TextStyle(
-                  backgroundColor: Colors.white,
-                  fontSize: 20,
-                ),
+                style: const TextStyle(fontSize: 20),
               ),
-              RepaintBoundary(
-                key: qrKey,
-                child: QrImage(
-                    data: e["id"].toString(),
-                    size: 150,
-                    errorCorrectionLevel: QrErrorCorrectLevel.H,
-                    backgroundColor: Colors.white,
-                    gapless: true),
+              QrImage(
+                data: e["id"].toString(),
+                size: 150,
+                errorCorrectionLevel: QrErrorCorrectLevel.H,
+                backgroundColor: Colors.white,
+                gapless: true,
               ),
-              Text(e["descricao"]),
-              const SizedBox(
-                height: 3,
+              Text(
+                e["descricao"],
+                textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 3),
               Row(
-                //// Colocar botões aqui
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Sair")),
-                  TextButton(onPressed: () {}, child: const Text("Imprimir")),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Sair"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const PrintQR()));
+                    },
+                    child: const Text("Imprimir"),
+                  ),
                 ],
               ),
             ],
