@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'navigation_printqr.widget.dart';
+import 'package:mvp_proex/invoice_service.dart';
 
 Future qrDialog(BuildContext context, dynamic e) async {
+  final PdfInvoiceService service = PdfInvoiceService();
   return showDialog(
     context: context,
     builder: (context) {
@@ -42,11 +44,13 @@ Future qrDialog(BuildContext context, dynamic e) async {
                     child: const Text("Sair"),
                   ),
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const PrintQR()));
+                    onPressed: () async {
+                      final data = await service.createHelloWorld(e);
+                      service.savePdfFile("QR_${e["name"]}", data);
+                      //Navigator.push(
+                      //  context,
+                      //MaterialPageRoute(
+                      //  builder: (context) => const PrintQR()));
                     },
                     child: const Text("Imprimir"),
                   ),
