@@ -131,6 +131,8 @@ class _SVGMapState extends State<SVGMap> {
       "x": widget.person.x,
       "y": widget.person.y,
       "vizinhos": {},
+      "descricao":
+          "Prédio em que se concentra a maior parte das atividades administrativas da universidade, como matrícula ou trancamento",
       "type": TypePoint.goal.toString(),
       "name": "Entrada Reitoria"
     };
