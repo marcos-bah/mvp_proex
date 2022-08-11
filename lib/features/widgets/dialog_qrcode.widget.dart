@@ -45,12 +45,8 @@ Future qrDialog(BuildContext context, dynamic e) async {
                   ),
                   TextButton(
                     onPressed: () async {
-                      final data = await service.createHelloWorld(e);
+                      final data = await service.createPDF(e);
                       service.savePdfFile("QR_${e["name"]}", data);
-                      //Navigator.push(
-                      //  context,
-                      //MaterialPageRoute(
-                      //  builder: (context) => const PrintQR()));
                     },
                     child: const Text("Imprimir"),
                   ),
