@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'navigation_printqr.widget.dart';
 import 'package:mvp_proex/invoice_service.dart';
 
 Future qrDialog(BuildContext context, dynamic e) async {
