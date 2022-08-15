@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mvp_proex/app/app.constant.dart';
 
@@ -17,9 +18,10 @@ class PointWidget extends StatelessWidget {
       top: json["y"] - side / 2,
       left: json["x"] - side / 2,
       child: InkWell(
-        onTap: Platform.isLinux || Platform.isMacOS || Platform.isWindows
-            ? onPressed
-            : null,
+        onTap:
+            kIsWeb || Platform.isLinux || Platform.isMacOS || Platform.isWindows
+                ? onPressed
+                : null,
         child: Container(
           color: json["type"] == TypePoint.path.toString()
               ? Colors.red
