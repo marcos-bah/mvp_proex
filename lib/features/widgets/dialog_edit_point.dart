@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dijkstra/dijkstra.dart';
+import 'package:mvp_proex/features/widgets/dialog_qrcode.widget.dart';
 
 Future dialogEditPoint(
     BuildContext context,
@@ -63,12 +64,12 @@ Future dialogEditPoint(
               //onde estou
               int here = 0;
 
-              points.forEach((element) {
+              for (var element in points) {
                 if (element['x'] == widget.person.x &&
                     element['y'] == widget.person.y) {
                   here = element['id'];
                 }
-              });
+              }
 
               // lista do caminho a ser seguido
               List tracker = Dijkstra.findPathFromGraph(graph, here, e["id"]);

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mvp_proex/features/model/person.model.dart';
+import 'package:mvp_proex/features/person/person.model.dart';
 
 class PersonWidget extends StatelessWidget {
   final PersonModel person;

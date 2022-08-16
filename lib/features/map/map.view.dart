@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mvp_proex/features/model/person.model.dart';
-import 'package:mvp_proex/features/widgets/svg_map.widget.dart';
+import 'package:mvp_proex/features/person/person.model.dart';
+import 'package:mvp_proex/features/svg_map/svg_map.view.dart';
 
 class MapView extends StatefulWidget {
   const MapView({Key? key}) : super(key: key);

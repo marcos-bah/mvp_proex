@@ -68,7 +68,7 @@ Future dialogPointWidget(
                 SharedPreferences prefs = await SharedPreferences.getInstance();
 
                 int prev = (prefs.getInt('prev') ?? 0);
-                print(prev);
+                //print(prev);
                 int peso = ((details.localPosition.dx - points[prev]["x"])
                             .abs() +
                         (details.localPosition.dy - points[prev]["y"]).abs())
@@ -82,7 +82,7 @@ Future dialogPointWidget(
                   "type": type,
                   "name": name
                 };
-                print(prev);
+                //print(prev);
 
                 /*O ponto anterior a este deve conter o novo ponto */
                 points[prev - 1]["vizinhos"].putIfAbsent(id, () => peso);
@@ -92,17 +92,17 @@ Future dialogPointWidget(
                 points.add(json);
 
                 await prefs.setInt('prev', id);
-                print(points);
-                print(graph);
+                //print(points);
+                //print(graph);
 
-                List<String> myList = (prefs.getStringList('tracker') ?? []);
-                List<int> myOriginaList =
-                    myList.map((i) => int.parse(i)).toList();
-                print('Your list  ${myOriginaList}');
+                //List<String> myList = (prefs.getStringList('tracker') ?? []);
+                //List<int> myOriginaList =
+                //    myList.map((i) => int.parse(i)).toList();
+                //print('Your list  $myOriginaList');
 
-                int usuarioPos = (prefs.getInt('pos') ?? 0);
+                //int usuarioPos = (prefs.getInt('pos') ?? 0);
 
-                print('Usuario pos ${usuarioPos}');
+                //print('Usuario pos $usuarioPos');
 
                 Navigator.pop(context);
               },

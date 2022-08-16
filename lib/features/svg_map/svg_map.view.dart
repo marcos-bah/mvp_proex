@@ -1,16 +1,18 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter_svg/svg.dart';
 import 'package:mvp_proex/app/app.constant.dart';
-import 'package:mvp_proex/features/model/person.model.dart';
+import 'package:mvp_proex/features/person/person.model.dart';
 import 'package:mvp_proex/features/widgets/custom_appbar.widget.dart';
 import 'package:mvp_proex/features/widgets/dialog_edit_point.dart';
 import 'package:mvp_proex/features/widgets/dialog_point.widget.dart';
-import 'package:mvp_proex/features/widgets/person.widget.dart';
-import 'package:mvp_proex/features/widgets/point.widget.dart';
+import 'package:mvp_proex/features/person/person.widget.dart';
+import 'package:mvp_proex/features/point/point.widget.dart';
 import 'package:mvp_proex/features/widgets/point_valid.widget.dart';
+import 'package:mvp_proex/features/widgets/qrcode_scanner.widget.dart';
 
 class SVGMap extends StatefulWidget {
   /// Define o caminho do asset:
