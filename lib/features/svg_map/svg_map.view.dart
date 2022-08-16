@@ -107,7 +107,7 @@ class _SVGMapState extends State<SVGMap> {
   List<Map<String, dynamic>> points = [];
   Map graph = {};
 
-  Future<void> centralizar(bool flag) async {
+  void centralizar(bool flag) {
     setState(() {
       flagDuration = flag;
       top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
@@ -125,12 +125,14 @@ class _SVGMapState extends State<SVGMap> {
       color: Colors.white,
       fit: BoxFit.none,
     );
-    // ignore: unused_local_variable
+
     Map<String, dynamic> json = {
       "id": id++,
       "x": widget.person.x,
       "y": widget.person.y,
       "vizinhos": {},
+      "descricao":
+          "Prédio em que se concentra a maior parte das atividades administrativas da universidade, como matrícula ou trancamento",
       "type": TypePoint.goal.toString(),
       "name": "Entrada Reitoria"
     };
@@ -159,22 +161,45 @@ class _SVGMapState extends State<SVGMap> {
     return Scaffold(
       appBar: CustomAppBar(
         height: 100,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(
-              Icons.home_work,
-              size: 30,
-              color: Colors.white,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(
+                  Icons.home_work,
+                  size: 30,
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Text(
+                  "Entrada Reitoria",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(
-              width: 20,
-            ),
-            Text(
-              "Entrada Reitoria",
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
+            //Caso queira navegar para outra página
+            Positioned(
+              top: -10,
+              left: 0,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.qr_code_outlined,
+                  size: 35,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => Qrcodescannermvp()));
+                },
               ),
             ),
           ],
@@ -308,6 +333,7 @@ class _SVGMapState extends State<SVGMap> {
         children: [
           isAdmin
               ? FloatingActionButton(
+                  heroTag: "btnLine",
                   onPressed: () {
                     setState(
                       () {
@@ -326,8 +352,9 @@ class _SVGMapState extends State<SVGMap> {
                   height: 20,
                 )
               : Container(),
-          (Platform.isLinux || Platform.isMacOS || Platform.isWindows)
+          (kIsWeb || Platform.isLinux || Platform.isMacOS || Platform.isWindows)
               ? FloatingActionButton(
+                  heroTag: "btnAdmin",
                   backgroundColor: Colors.red[900],
                   onPressed: () {
                     setState(
@@ -358,6 +385,7 @@ class _SVGMapState extends State<SVGMap> {
             height: 20,
           ),
           FloatingActionButton(
+            heroTag: "btnScale",
             onPressed: () {
               setState(
                 () {
@@ -380,6 +408,7 @@ class _SVGMapState extends State<SVGMap> {
             height: 20,
           ),
           FloatingActionButton(
+            heroTag: "btnCentralizar",
             onPressed: () {
               centralizar(true);
             },
@@ -390,59 +419,60 @@ class _SVGMapState extends State<SVGMap> {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 10,
-          horizontal: 20,
-        ),
-        margin: const EdgeInsets.all(16),
-        height: 80,
-        width: 100,
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(25)),
-          color: Colors.deepOrange,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Icon(
-              Icons.arrow_upward_outlined,
-              size: 40,
-              color: Colors.white,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: const [
-                Icon(
-                  Icons.social_distance,
-                  color: Colors.white,
-                ),
-                Text("2 Km"),
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: const [
-                Icon(
-                  Icons.timelapse,
-                  color: Colors.white,
-                ),
-                Text("1 min"),
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: const [
-                Icon(
-                  Icons.timer,
-                  color: Colors.white,
-                ),
-                Text("10:56"),
-              ],
-            ),
-          ],
-        ),
-      ),
+      ///// Não ficará visível para o administrador
+      // bottomNavigationBar: Container(
+      //   padding: const EdgeInsets.symmetric(
+      //     vertical: 10,
+      //     horizontal: 20,
+      //   ),
+      //   margin: const EdgeInsets.all(16),
+      //   height: 80,
+      //   width: 100,
+      //   decoration: const BoxDecoration(
+      //     borderRadius: BorderRadius.all(Radius.circular(25)),
+      //     color: Colors.deepOrange,
+      //   ),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //     children: [
+      //       const Icon(
+      //         Icons.arrow_upward_outlined,
+      //         size: 40,
+      //         color: Colors.white,
+      //       ),
+      //       Column(
+      //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //         children: const [
+      //           Icon(
+      //             Icons.social_distance,
+      //             color: Colors.white,
+      //           ),
+      //           Text("2 Km"),
+      //         ],
+      //       ),
+      //       Column(
+      //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //         children: const [
+      //           Icon(
+      //             Icons.timelapse,
+      //             color: Colors.white,
+      //           ),
+      //           Text("1 min"),
+      //         ],
+      //       ),
+      //       Column(
+      //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //         children: const [
+      //           Icon(
+      //             Icons.timer,
+      //             color: Colors.white,
+      //           ),
+      //           Text("10:56"),
+      //         ],
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 }

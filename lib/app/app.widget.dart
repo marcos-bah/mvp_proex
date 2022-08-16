@@ -12,7 +12,7 @@ class AppWidget extends StatelessWidget {
       title: 'MVP Demo',
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
-        scaffoldBackgroundColor: Colors.black26,
+        scaffoldBackgroundColor: Colors.black,
       ),
       initialRoute: '/map',
       routes: {
