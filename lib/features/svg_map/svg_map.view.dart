@@ -6,12 +6,14 @@ import 'dart:math' as math;
 import 'package:flutter_svg/svg.dart';
 import 'package:mvp_proex/app/app.constant.dart';
 import 'package:mvp_proex/features/person/person.model.dart';
+import 'package:mvp_proex/features/person/person.widget.dart';
+import 'package:mvp_proex/features/point/point.model.dart';
+import 'package:mvp_proex/features/point/point.widget.dart';
+import 'package:mvp_proex/features/point/point.repository.dart';
+import 'package:mvp_proex/features/widgets/point_valid.widget.dart';
 import 'package:mvp_proex/features/widgets/custom_appbar.widget.dart';
 import 'package:mvp_proex/features/widgets/dialog_edit_point.dart';
 import 'package:mvp_proex/features/widgets/dialog_point.widget.dart';
-import 'package:mvp_proex/features/person/person.widget.dart';
-import 'package:mvp_proex/features/point/point.widget.dart';
-import 'package:mvp_proex/features/widgets/point_valid.widget.dart';
 import 'package:mvp_proex/features/widgets/qrcode_scanner.widget.dart';
 
 class SVGMap extends StatefulWidget {
@@ -93,7 +95,8 @@ class _SVGMapState extends State<SVGMap> {
 
   late double scaleFactor;
 
-  bool flag = true;
+  // TODO: mudar de flag para flagScale?
+  bool flagScale = true;
   bool flagDuration = false;
 
   late final Widget svg;
@@ -104,12 +107,14 @@ class _SVGMapState extends State<SVGMap> {
   int prev = 0;
   int id = 0;
   int inicio = 0;
-  List<Map<String, dynamic>> points = [];
+  // TODO: mudar de points para pointList?
+  List<Map<String, dynamic>> pointList = [];
+  List<PointModel> newPointList = [];
   Map graph = {};
 
-  void centralizar(bool flag) {
+  void centralizar(bool flagScale) {
     setState(() {
-      flagDuration = flag;
+      flagDuration = flagScale;
       top = ((widget.person.y - MediaQuery.of(context).size.height / 2) +
               2 * AppBar().preferredSize.height) *
           -1;
@@ -126,6 +131,20 @@ class _SVGMapState extends State<SVGMap> {
       fit: BoxFit.none,
     );
 
+    var allPoints = PointRepository();
+    allPoints.getAllPoints(
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1Y2FzQHVuaWZlaS5iciIsImlhdCI6MTY2MDI1ODg2NywiZXhwIjoxNjYwMzQ1MjY3LCJzdWIiOiIwZjQwYjJlMS01N2YwLTRlMTMtOTQ5ZS1mYWVkOWE1OGMxYWUifQ.mjaONFf16HNGEKvEwCbC93MehwHRVBqEWbhg0PVbQ8M");
+
+    var point = PointModel();
+    point.id = id;
+    point.x = widget.person.x;
+    point.y = widget.person.y;
+    point.neighbor = {};
+    point.description =
+        "Prédio em que se concentra a maior parte das atividades administrativas da universidade, como matrícula ou trancamento";
+    point.type = TypePoint.goal;
+    point.name = "Entrada Reitoria";
+
     Map<String, dynamic> json = {
       "id": id++,
       "x": widget.person.x,
@@ -138,17 +157,18 @@ class _SVGMapState extends State<SVGMap> {
     };
 
     graph[0] = {};
-    points.add(json);
+    pointList.add(json);
+    newPointList.add(point);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isValidX = (points.last["x"] > ((x ?? 1) - 1) &&
-        points.last["x"] < ((x ?? 0) + 1));
+    bool isValidX = (pointList.last["x"] > ((x ?? 1) - 1) &&
+        pointList.last["x"] < ((x ?? 0) + 1));
 
-    bool isValidY = (points.last["y"] > ((y ?? 1)) - 1 &&
-        points.last["y"] < ((y ?? 0) + 1));
+    bool isValidY = (pointList.last["y"] > ((y ?? 1)) - 1 &&
+        pointList.last["y"] < ((y ?? 0) + 1));
 
     bool isValid = isValidX || isValidY;
 
@@ -230,12 +250,12 @@ class _SVGMapState extends State<SVGMap> {
                     onDoubleTap: () {
                       setState(
                         () {
-                          if (flag) {
+                          if (flagScale) {
                             scaleFactor *= 2;
-                            flag = false;
+                            flagScale = false;
                           } else {
                             scaleFactor *= 1 / 2;
-                            flag = true;
+                            flagScale = true;
                           }
                         },
                       );
@@ -260,9 +280,11 @@ class _SVGMapState extends State<SVGMap> {
                         },
                       );
                     },
-                    onSecondaryTapDown: (details) {
+                    // TODO: mudar para TapDown?
+                    onTapDown: (details) {
                       if (isAdmin && isValid) {
-                        dialogPointWidget(context, details, id, points, graph)
+                        dialogPointWidget(
+                                context, details, id, pointList, graph)
                             .whenComplete(
                           () => setState(
                             () {
@@ -280,7 +302,7 @@ class _SVGMapState extends State<SVGMap> {
                         children: [
                           svg,
                           if (isAdmin)
-                            ...points
+                            ...pointList
                                 .map<Widget>(
                                   (e) => PointWidget(
                                     json: e,
@@ -297,7 +319,7 @@ class _SVGMapState extends State<SVGMap> {
                                             inicio,
                                             centralizar,
                                             widget,
-                                            points,
+                                            pointList,
                                             graph);
                                       }
                                     },
@@ -313,7 +335,7 @@ class _SVGMapState extends State<SVGMap> {
                               y: y ?? 0,
                               width: widget.svgWidth,
                               height: widget.svgHeight,
-                              lastPoint: points.last,
+                              lastPoint: pointList.last,
                               isValidX: isValidX,
                               isValidY: isValidY,
                             ),
@@ -389,18 +411,18 @@ class _SVGMapState extends State<SVGMap> {
             onPressed: () {
               setState(
                 () {
-                  if (flag) {
+                  if (flagScale) {
                     scaleFactor *= 2;
-                    flag = false;
+                    flagScale = false;
                   } else {
                     scaleFactor *= 1 / 2;
-                    flag = true;
+                    flagScale = true;
                   }
                 },
               );
             },
             child: Icon(
-              flag ? Icons.zoom_in_sharp : Icons.zoom_out_map,
+              flagScale ? Icons.zoom_in_sharp : Icons.zoom_out_map,
               size: 30,
             ),
           ),
