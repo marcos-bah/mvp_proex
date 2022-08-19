@@ -53,7 +53,7 @@ Future qrDialog(
                   ),
                   TextButton(
                     onPressed: () async {
-                      final data = await service.createPDF(point);
+                      final data = await service.createPDF([point]);
                       service.savePdfFile("QR_${point.name}", data);
                     },
                     child: const Text("Imprimir"),

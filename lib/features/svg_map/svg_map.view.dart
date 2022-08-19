@@ -14,7 +14,7 @@ import 'package:mvp_proex/features/widgets/point_valid.widget.dart';
 import 'package:mvp_proex/features/widgets/custom_appbar.widget.dart';
 import 'package:mvp_proex/features/widgets/dialog_edit_point.dart';
 import 'package:mvp_proex/features/widgets/dialog_point.widget.dart';
-import 'package:mvp_proex/features/widgets/qrcode_scanner.widget.dart';
+import 'package:mvp_proex/invoice_service.dart';
 
 class SVGMap extends StatefulWidget {
   /// Define o caminho do asset:
@@ -164,6 +164,7 @@ class _SVGMapState extends State<SVGMap> {
 
   @override
   Widget build(BuildContext context) {
+    final PdfInvoiceService service = PdfInvoiceService();
     bool isValidX = (newPointList.last.x > ((x ?? 1) - 1) &&
         newPointList.last.x < ((x ?? 0) + 1));
 
@@ -214,11 +215,9 @@ class _SVGMapState extends State<SVGMap> {
                   size: 35,
                   color: Colors.white,
                 ),
-                onPressed: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => Qrcodescannermvp()));
+                onPressed: () async {
+                  final data = await service.createPDF(newPointList);
+                  service.savePdfFile("QR_Todos", data);
                 },
               ),
             ),

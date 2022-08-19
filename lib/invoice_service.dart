@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:io';
+import 'package:mvp_proex/features/point/point.model.dart';
 import 'package:open_document/open_document.dart';
 import 'package:path_provider/path_provider.dart';
 //import 'package:pdf_invoice_generator_flutter/model/product.dart';
@@ -14,40 +15,42 @@ class CustomRow {
 }
 
 class PdfInvoiceService {
-  Future<Uint8List> createPDF(var point) {
+  Future<Uint8List> createPDF(List<PointModel> points) {
     final pdf = pw.Document();
-    pdf.addPage(pw.Page(
-      pageFormat: PdfPageFormat.a4,
-      build: (pw.Context context) {
-        return pw.Center(
-            child: pw.Container(
-          padding: const pw.EdgeInsets.all(20),
-          child: pw.Column(
-              mainAxisSize: pw.MainAxisSize.min,
-              mainAxisAlignment: pw.MainAxisAlignment.center,
-              children: [
-                pw.Text(
-                  point["name"],
-                  style: const pw.TextStyle(fontSize: 20),
-                ),
-                pw.SizedBox(height: 10),
-                pw.BarcodeWidget(
-                  data: point["id"].toString(),
-                  barcode: pw.Barcode.qrCode(
-                      typeNumber: 2,
-                      errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
-                  width: 150,
-                  height: 150,
-                ),
-                pw.SizedBox(height: 10),
-                pw.Text(
-                  point["descricao"],
-                  textAlign: pw.TextAlign.center,
-                ),
-              ]),
-        ));
-      },
-    ));
+    for (PointModel point in points) {
+      pdf.addPage(pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Center(
+              child: pw.Container(
+            padding: const pw.EdgeInsets.all(20),
+            child: pw.Column(
+                mainAxisSize: pw.MainAxisSize.min,
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                children: [
+                  pw.Text(
+                    point.name,
+                    style: const pw.TextStyle(fontSize: 20),
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.BarcodeWidget(
+                    data: point.id.toString(),
+                    barcode: pw.Barcode.qrCode(
+                        typeNumber: 2,
+                        errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
+                    width: 150,
+                    height: 150,
+                  ),
+                  pw.SizedBox(height: 10),
+                  pw.Text(
+                    point.description,
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ]),
+          ));
+        },
+      ));
+    }
     return pdf.save();
   }
 

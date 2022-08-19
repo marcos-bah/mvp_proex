@@ -51,7 +51,7 @@ Future dialogPointWidget(
               ),
               onChanged: (value) {
                 if (value.isEmpty) {
-                  name = "Objetivo $id";
+                  name = "Ponto $id";
                 } else {
                   name = value;
                 }
@@ -99,6 +99,8 @@ Future dialogPointWidget(
                 point.y = details.localPosition.dy;
                 point.description = descricao;
                 point.type = type;
+                point.name = name;
+                point.neighbor = {"qq string": "qq string"};
                 Map<String, dynamic> json = {
                   "id": id,
                   "x": details.localPosition.dx,
