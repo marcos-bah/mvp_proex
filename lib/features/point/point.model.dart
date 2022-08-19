@@ -10,6 +10,7 @@ class PointModel {
   late int floor;
   late bool breakpoint;
   late Map<String, String> neighbor;
+  // "{"left": {"id":"7e07052a-1ca4-4372-b4ce-b10acd55efeb", "peso":5}}"
   late TypePoint type;
   late String mapId;
 
@@ -23,7 +24,7 @@ class PointModel {
     y = json["y"];
     floor = json["floor"];
     breakpoint = json["breakpoint"];
-    neighbor = json["neighbor"]; //!
+    neighbor = json["neighbor"];
     mapId = json["map_id"];
   }
 

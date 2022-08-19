@@ -135,15 +135,15 @@ class _SVGMapState extends State<SVGMap> {
     allPoints.getAllPoints(
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1Y2FzQHVuaWZlaS5iciIsImlhdCI6MTY2MDI1ODg2NywiZXhwIjoxNjYwMzQ1MjY3LCJzdWIiOiIwZjQwYjJlMS01N2YwLTRlMTMtOTQ5ZS1mYWVkOWE1OGMxYWUifQ.mjaONFf16HNGEKvEwCbC93MehwHRVBqEWbhg0PVbQ8M");
 
-    var point = PointModel();
-    point.id = id;
-    point.x = widget.person.x;
-    point.y = widget.person.y;
-    point.neighbor = {};
-    point.description =
+    PointModel pointVar = PointModel();
+    pointVar.id = id;
+    pointVar.x = widget.person.x;
+    pointVar.y = widget.person.y;
+    pointVar.neighbor = {};
+    pointVar.description =
         "Prédio em que se concentra a maior parte das atividades administrativas da universidade, como matrícula ou trancamento";
-    point.type = TypePoint.goal;
-    point.name = "Entrada Reitoria";
+    pointVar.type = TypePoint.goal;
+    pointVar.name = "Entrada Reitoria";
 
     Map<String, dynamic> json = {
       "id": id++,
@@ -158,17 +158,17 @@ class _SVGMapState extends State<SVGMap> {
 
     graph[0] = {};
     pointList.add(json);
-    newPointList.add(point);
+    newPointList.add(pointVar);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    bool isValidX = (pointList.last["x"] > ((x ?? 1) - 1) &&
-        pointList.last["x"] < ((x ?? 0) + 1));
+    bool isValidX = (newPointList.last.x > ((x ?? 1) - 1) &&
+        newPointList.last.x < ((x ?? 0) + 1));
 
-    bool isValidY = (pointList.last["y"] > ((y ?? 1)) - 1 &&
-        pointList.last["y"] < ((y ?? 0) + 1));
+    bool isValidY = (newPointList.last.y > ((y ?? 1)) - 1 &&
+        newPointList.last.y < ((y ?? 0) + 1));
 
     bool isValid = isValidX || isValidY;
 
@@ -284,7 +284,7 @@ class _SVGMapState extends State<SVGMap> {
                     onTapDown: (details) {
                       if (isAdmin && isValid) {
                         dialogPointWidget(
-                                context, details, id, pointList, graph)
+                                context, details, id, newPointList, graph)
                             .whenComplete(
                           () => setState(
                             () {
@@ -302,10 +302,10 @@ class _SVGMapState extends State<SVGMap> {
                         children: [
                           svg,
                           if (isAdmin)
-                            ...pointList
+                            ...newPointList
                                 .map<Widget>(
                                   (e) => PointWidget(
-                                    json: e,
+                                    point: e,
                                     side: 5,
                                     onPressed: () {
                                       if (isAdmin) {
@@ -319,7 +319,7 @@ class _SVGMapState extends State<SVGMap> {
                                             inicio,
                                             centralizar,
                                             widget,
-                                            pointList,
+                                            newPointList,
                                             graph);
                                       }
                                     },

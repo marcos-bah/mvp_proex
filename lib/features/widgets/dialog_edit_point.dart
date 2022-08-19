@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:dijkstra/dijkstra.dart';
 import 'package:mvp_proex/features/widgets/dialog_qrcode.widget.dart';
+import 'package:mvp_proex/features/point/point.model.dart';
 
 Future dialogEditPoint(
     BuildContext context,
-    var e,
+    PointModel e,
     int id,
     int prev,
     int inicio,
     Function centralizar,
     var widget,
-    List<Map<dynamic, dynamic>> points,
+    List<PointModel> points,
     var graph) {
   return showDialog(
     context: context,
@@ -18,10 +19,10 @@ Future dialogEditPoint(
       return AlertDialog(
         content: SingleChildScrollView(
           child: Column(children: [
-            Text("Nome do Ponto: ${e["name"]}",
+            Text("Nome do Ponto: ${e.name}",
                 style: const TextStyle(fontSize: 20)),
             Text(
-                "\nID do Ponto: ${e["id"]}\nX = ${e["x"].toStringAsPrecision(6)}\nY = ${e["y"].toStringAsPrecision(6)}\nDescrição: ${e["descricao"]}"),
+                "\nID do Ponto: ${e.id}\nX = ${e.x.toStringAsPrecision(6)}\nY = ${e.y.toStringAsPrecision(6)}\nDescrição: ${e.description}"),
           ]),
         ),
         actions: [
@@ -56,7 +57,7 @@ Future dialogEditPoint(
           ),
           TextButton(
             onPressed: () {
-              prev = e["id"];
+              prev = e.id;
               Navigator.pop(context);
             },
             child: const Text(
@@ -78,22 +79,22 @@ Future dialogEditPoint(
               int here = 0;
 
               for (var element in points) {
-                if (element['x'] == widget.person.x &&
-                    element['y'] == widget.person.y) {
-                  here = element['id'];
+                if (element.x == widget.person.x &&
+                    element.y == widget.person.y) {
+                  here = element.id;
                 }
               }
 
               // lista do caminho a ser seguido
-              List tracker = Dijkstra.findPathFromGraph(graph, here, e["id"]);
+              List tracker = Dijkstra.findPathFromGraph(graph, here, e.id);
 
               tracker.removeAt(0);
 
               for (var i = 0; i < tracker.length; i++) {
                 widget.person.setx = points
-                    .firstWhere((element) => element['id'] == tracker[i])['x'];
+                    .firstWhere((element) => element.id == tracker[i]).x;
                 widget.person.sety = points
-                    .firstWhere((element) => element['id'] == tracker[i])['y'];
+                    .firstWhere((element) => element.id == tracker[i]).y;
                 inicio = tracker[i];
                 await Future.delayed(const Duration(seconds: 3));
                 centralizar(true);

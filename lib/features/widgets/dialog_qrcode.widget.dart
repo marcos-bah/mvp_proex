@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:mvp_proex/invoice_service.dart';
+import 'package:mvp_proex/features/point/point.model.dart';
 
-Future qrDialog(BuildContext context, dynamic e) async {
+Future qrDialog(
+  BuildContext context,
+  PointModel point,
+) async {
   final PdfInvoiceService service = PdfInvoiceService();
 
   return showDialog(
@@ -22,18 +26,18 @@ Future qrDialog(BuildContext context, dynamic e) async {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                e["name"],
+                point.name,
                 style: const TextStyle(fontSize: 20),
               ),
               QrImage(
-                data: e["id"].toString(),
+                data: point.id.toString(),
                 size: 150,
                 errorCorrectionLevel: QrErrorCorrectLevel.H,
                 backgroundColor: Colors.white,
                 gapless: true,
               ),
               Text(
-                e["descricao"],
+                point.description,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 3),
@@ -49,8 +53,8 @@ Future qrDialog(BuildContext context, dynamic e) async {
                   ),
                   TextButton(
                     onPressed: () async {
-                      final data = await service.createPDF(e);
-                      service.savePdfFile("QR_${e["name"]}", data);
+                      final data = await service.createPDF(point);
+                      service.savePdfFile("QR_${point.name}", data);
                     },
                     child: const Text("Imprimir"),
                   ),

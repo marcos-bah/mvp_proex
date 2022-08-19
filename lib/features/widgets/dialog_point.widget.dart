@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:mvp_proex/app/app.constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mvp_proex/features/point/point.model.dart';
 
 Future dialogPointWidget(
-    BuildContext context, var details, int id, var points, var graph) {
+  BuildContext context,
+  var details,
+  int id,
+  List<PointModel> points,
+  var graph,
+) {
   return showDialog(
     context: context,
     builder: (context) {
-      Object? type = TypePoint.path.toString();
+      TypePoint type = TypePoint.path;
       String name = "Caminho";
-      String descricao = "Descricao";
+      String descricao = "Descrição";
       return AlertDialog(
         title: Text("Adicionar ponto $id"),
         content: Column(
@@ -18,23 +24,24 @@ Future dialogPointWidget(
                 "X = ${details.localPosition.dx}\nY = ${details.localPosition.dy}"),
             DropdownButtonFormField(
               value: type,
-              items: [
+              items: const [
                 DropdownMenuItem(
-                  child: const Text("Objetivo"),
-                  value: TypePoint.goal.toString(),
+                  child: Text("Objetivo"),
+                  value: TypePoint.goal,
                 ),
                 DropdownMenuItem(
-                  child: const Text("Caminho"),
-                  value: TypePoint.path.toString(),
+                  child: Text("Caminho"),
+                  value: TypePoint.path,
                 ),
               ],
               onChanged: (value) {
-                if (value != TypePoint.goal.toString()) {
+                if (value != TypePoint.goal) {
                   name = "Caminho";
+                  type = TypePoint.path;
                 } else {
                   name = "Objetivo";
+                  type = TypePoint.goal;
                 }
-                type = value;
               },
             ),
             TextFormField(
@@ -57,7 +64,7 @@ Future dialogPointWidget(
               ),
               onChanged: (value) {
                 if (value.isEmpty) {
-                  descricao = "Descricao";
+                  descricao = "Descrição";
                 } else {
                   descricao = value;
                 }
@@ -83,10 +90,15 @@ Future dialogPointWidget(
 
                 int prev = (prefs.getInt('prev') ?? 0);
                 // print(prev);
-                int peso = ((details.localPosition.dx - points[prev]["x"])
-                            .abs() +
-                        (details.localPosition.dy - points[prev]["y"]).abs())
+                int peso = ((details.localPosition.dx - points[prev].x).abs() +
+                        (details.localPosition.dy - points[prev].y).abs())
                     .round();
+                PointModel point = PointModel();
+                point.id = id;
+                point.x = details.localPosition.dx;
+                point.y = details.localPosition.dy;
+                point.description = descricao;
+                point.type = type;
                 Map<String, dynamic> json = {
                   "id": id,
                   "x": details.localPosition.dx,
@@ -100,11 +112,11 @@ Future dialogPointWidget(
                 // print(prev);
 
                 /* O ponto anterior a este deve conter o novo ponto */
-                points[prev - 1]["vizinhos"].putIfAbsent(id, () => peso);
-                graph[prev - 1] = points[prev - 1]["vizinhos"];
+                // points[prev - 1].neighbor.putIfAbsent(id, () => peso);
+                graph[prev - 1] = points[prev - 1].neighbor;
 
                 graph.putIfAbsent(id, () => json["vizinhos"]);
-                points.add(json);
+                points.add(point);
 
                 await prefs.setInt('prev', id);
                 // print(points);

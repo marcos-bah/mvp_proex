@@ -14,7 +14,7 @@ class CustomRow {
 }
 
 class PdfInvoiceService {
-  Future<Uint8List> createPDF(var e) {
+  Future<Uint8List> createPDF(var point) {
     final pdf = pw.Document();
     pdf.addPage(pw.Page(
       pageFormat: PdfPageFormat.a4,
@@ -27,12 +27,12 @@ class PdfInvoiceService {
               mainAxisAlignment: pw.MainAxisAlignment.center,
               children: [
                 pw.Text(
-                  e["name"],
+                  point["name"],
                   style: const pw.TextStyle(fontSize: 20),
                 ),
                 pw.SizedBox(height: 10),
                 pw.BarcodeWidget(
-                  data: e["id"].toString(),
+                  data: point["id"].toString(),
                   barcode: pw.Barcode.qrCode(
                       typeNumber: 2,
                       errorCorrectLevel: pw.BarcodeQRCorrectionLevel.high),
@@ -41,7 +41,7 @@ class PdfInvoiceService {
                 ),
                 pw.SizedBox(height: 10),
                 pw.Text(
-                  e["descricao"],
+                  point["descricao"],
                   textAlign: pw.TextAlign.center,
                 ),
               ]),
